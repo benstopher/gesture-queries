@@ -16,6 +16,8 @@ color[]       userClr = new color[]{ color(255,0,0),
 PVector com = new PVector();                                   
 PVector com2d = new PVector();                                   
 
+boolean DRAW = true;
+
 void setup()
 {
   size(640, 480);
@@ -54,7 +56,9 @@ void draw()
   background( 0 );
   // update the cam
   context.update();
-  image(context.depthImage(),0,0);
+  if( DRAW ){ 
+    image(context.depthImage(),0,0);
+  }
   
   // draw the skeleton if it's available
   int[] userList = context.getUsers();
@@ -62,8 +66,10 @@ void draw()
   
   for( int i=0; i < userList.length; i++ ){
     if( context.isTrackingSkeleton( userList[i] ) ){
-      stroke(userClr[ (userList[i] - 1) % userClr.length ] );
-      drawSkeleton(userList[i]);
+      if( DRAW ){
+        stroke(userClr[ (userList[i] - 1) % userClr.length ] );
+        drawSkeleton(userList[i]);
+      }
       sendSkeleton( userList[i] );
     }      
   }    
@@ -81,9 +87,21 @@ PVector kinectToNormalised( PVector v ){
 
 JSONObject PVectorToJSONObject( PVector v ){
   JSONObject json = new JSONObject();
-  json.setFloat( "x", v.x );
-  json.setFloat( "y", v.y );
-  json.setFloat( "z", v.z );
+  try{
+    json.setFloat( "x", v.x );
+  } catch ( Exception e ){
+    println( "caught exception on x: " + e.getMessage() + ", x = " + v.x );
+  }
+  try{
+    json.setFloat( "y", v.y );
+  } catch ( Exception e ){
+    println( "caught exception on y: " + e.getMessage() + ", y = " + v.y );
+  }
+  try{
+    json.setFloat( "z", v.z );
+  } catch ( Exception e ){
+    println( "caught exception on z: " + e.getMessage() + ", z = " + v.z );
+  }
   return json;
 }
 
@@ -158,8 +176,6 @@ void sendSkeleton(int userId)
   msg.add( skeleton.toString() );
   oscP5.send( msg, netAddress ); 
   
-  println( "sent message to: " + "/user/" + userId + "/skeleton" );
-  
 }
 
 
@@ -232,6 +248,9 @@ void keyPressed()
   {
   case ' ':
     context.setMirror(!context.mirror());
+    break;
+  case 'd':
+    DRAW = !DRAW;
     break;
   }
 }  
