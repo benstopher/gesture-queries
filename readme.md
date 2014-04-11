@@ -2,6 +2,7 @@
 
 - Install Processing (v2.0 or above)
 - Install Simple OpenNI Processing library (https://code.google.com/p/simple-openni/wiki/Installation?ts=1377782923&updated=Installation)
+- Install OSC P5 Processing Library
 - Install Leap/Air Space
 - Install Google Chrome
 - Install node.js & npm
