@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Tracker</title>
+	<style>
+		body {
+		  font: 10px sans-serif;
+		}
+		.line {
+		  fill: none;
+		  stroke: #000000;
+		  stroke-width: 1.5px;
+		}
+	</style>
+</head>
+<body>
+	<section id="output">
+		
+	</section>
+	<button id="dump">Dump Data To Console</button>
+	
+	<section id="graph-line">
+		
+	</section>
+	
+
+	<script src="assets/javascript/libs/zepto.js"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="assets/javascript/libs/leap-0.4.3.js"></script>
+
+	<script src="assets/javascript/libs/d3.js"></script>
+
+	<script src="assets/javascript/libs/_o.js"></script>
+	<script src="assets/javascript/libs/_o.render.js"></script>
+
+	<script src="assets/javascript/modules/Timer.js"></script>
+	<script src="assets/javascript/modules/GetBodies.js"></script>
+	<script src="assets/javascript/modules/GetHands.js"></script>
+	<script src="assets/javascript/modules/GetSpeech.js"></script>
+	<script src="assets/javascript/modules/DataSaver.js"></script>
+	<script src="assets/javascript/modules/Input.js"></script>
+
+	<script src="assets/javascript/modules/d3/LineChart.js"></script>
+
+	<script>
+		var lineChart = new LineChart( '#graph-line', window.innerWidth, window.innerHeight );
+
+		var removeZigfuWatermark = (function(){
+			var removeWatermarkTimer = setInterval( function(){
+				var findWatermark = $('a[href="http://zigfu.com/watermark"]').parents('div');				
+				if( findWatermark.length !== 0 ){					
+					$('a[href="http://zigfu.com/watermark"]').parents('div').remove();
+					clearInterval( removeWatermarkTimer );
+				}
+			
+			}, 50 );
+		})();
+
+		var bodiesToLineChart = function( bodiesArray ){
+			var out = [];
+			for( var i = 0; i < bodiesArray.length; i++ ){
+				var b = {
+					time: bodiesArray[i].timestamp,
+					val: bodiesArray[i].metrics.armSpan
+				};
+				out.push( b );
+			}
+			return out;
+		}
+
+		var input = new Input( document.getElementById( 'output') );
+		input.start();
+
+		document.getElementById( 'dump' ).addEventListener( 'click', function(){
+			console.log( JSON.stringify( input.getData() ) );
+		});
+
+		lineChart.init();
+
+		input.saver.onSaveData = function( latest, all ){
+			console.log( "data saved", latest, "total length: ", all.length );
+			if( latest.bodies ){
+				lineChart.addData( bodiesToLineChart( latest.bodies.data ) );
+			}
+		}
+
+	</script>
+</body>
+</html>
