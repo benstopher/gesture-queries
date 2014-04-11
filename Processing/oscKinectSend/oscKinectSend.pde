@@ -51,6 +51,7 @@ void setup()
 
 void draw()
 {
+  background( 0 );
   // update the cam
   context.update();
   image(context.depthImage(),0,0);
