@@ -10,7 +10,7 @@ var LineChart = function( _ele, _w, _h ){
 
 LineChart.prototype = {
 	addLine: function( id ){
-		var c = "line";
+		var c = "line ";
 		if( id ){
 			c += " line-" + id;
 		}
