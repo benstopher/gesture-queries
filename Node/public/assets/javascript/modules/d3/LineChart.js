@@ -9,8 +9,14 @@ var LineChart = function( _ele, _w, _h ){
 };
 
 LineChart.prototype = {
-	parseDate: function( d ){ 
-		return d3.time.format("%d-%b-%y").parse( d ); 
+	addLine: function( id ){
+		var c = "line";
+		if( id ){
+			c += " line-" + id;
+		}
+		this.svg.append("path")
+    		.attr("class", c )
+    		.attr("d", this.line( [] ) );
 	},
 	init: function(){
 		var that = this;
@@ -31,7 +37,7 @@ LineChart.prototype = {
 		this.line = d3.svg.line()
 		    .x(function(d) { return that.x(d.time); })
 		    .y(function(d) { return that.y(d.val); })
-		    .interpolate( "basis" )
+		    .interpolate( "basis" );
 
 		this.svg = this.ele.append("svg")
 		    .attr("width", this.width + this.margin.left + this.margin.right )
@@ -39,26 +45,31 @@ LineChart.prototype = {
 		  .append("g")
     	    .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");	     	
 
-    	this.svg.append("path")
-    		.attr("class", "line")
-    		.attr("d", this.line( [] ) );
+    	this.addLine( 1 );
 
 	},
 	addData: function( data ){
 		var that = this;
 		this.data = data;
-		this.data.forEach(function(d) {
-			d.time = d.time; //that.parseDate(d.date);
-			d.val = +d.val;
-		});
+		for( var id in data ){
+			var idData = data[ id ];
+			idData.forEach(function(d) {
+				d.time = d.time; //that.parseDate(d.date);
+				d.val = +d.val;
+			});
 
-		this.x.domain(d3.extent(data, function(d) { return d.time; }));
-		this.y.domain(d3.extent(data, function(d) { return d.val; }));
+			this.x.domain(d3.extent( idData, function(d) { return d.time; }));
+			this.y.domain(d3.extent( idData, function(d) { return d.val; }));
 
-		this.svg.selectAll("path")
-		    .datum( this.data ) // set the new data
-		    .transition()
-            .attr("d", this.line ); // apply the new data values
+			if( this.svg.selectAll(".line-" + id ).size() < 1 ){
+				this.addLine( id );
+			}
+
+			this.svg.selectAll(".line-" + id )
+			    .datum( idData ) // set the new data
+			    .transition()
+	            .attr("d", this.line ); // apply the new data values
+	    }
 	},
 
 };

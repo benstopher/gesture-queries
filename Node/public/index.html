@@ -12,15 +12,39 @@
 		  stroke: #000000;
 		  stroke-width: 1.5px;
 		}
+			.line-1{
+				stroke: #FF0000;
+			}
+			.line-2{
+				stroke: #00FF00;
+			}
+			.line-3{
+				stroke: #0000FF;
+			}
+			.line-4{
+				stroke: #FFFF00;
+			}
+			.line-5{
+				stroke: #FF00FF;
+			}
+			.line-6{
+				stroke: #00FFFF;
+			}
 	</style>
 </head>
 <body>
-	<section id="output">
+
+<article>
+	<section id="graph-line">
 		
 	</section>
-	<button id="dump">Dump Data To Console</button>
-	
-	<section id="graph-line">
+	<nav>
+		<button id="btn-toggle-accumulate">Toggle Cumulative Graphing</button>
+	</nav>
+</article>
+
+
+	<section id="output">
 		
 	</section>
 	
@@ -44,48 +68,7 @@
 
 	<script src="assets/javascript/modules/d3/LineChart.js"></script>
 
-	<script>
-		var lineChart = new LineChart( '#graph-line', window.innerWidth, window.innerHeight );
+	<script src="assets/javascript/main.js"></script>
 
-		var removeZigfuWatermark = (function(){
-			var removeWatermarkTimer = setInterval( function(){
-				var findWatermark = $('a[href="http://zigfu.com/watermark"]').parents('div');				
-				if( findWatermark.length !== 0 ){					
-					$('a[href="http://zigfu.com/watermark"]').parents('div').remove();
-					clearInterval( removeWatermarkTimer );
-				}
-			
-			}, 50 );
-		})();
-
-		var bodiesToLineChart = function( bodiesArray ){
-			var out = [];
-			for( var i = 0; i < bodiesArray.length; i++ ){
-				var b = {
-					time: bodiesArray[i].timestamp,
-					val: bodiesArray[i].metrics.armSpan
-				};
-				out.push( b );
-			}
-			return out;
-		}
-
-		var input = new Input( document.getElementById( 'output') );
-		input.start();
-
-		document.getElementById( 'dump' ).addEventListener( 'click', function(){
-			console.log( JSON.stringify( input.getData() ) );
-		});
-
-		lineChart.init();
-
-		input.saver.onSaveData = function( latest, all ){
-			console.log( "data saved", latest, "total length: ", all.length );
-			if( latest.bodies ){
-				lineChart.addData( bodiesToLineChart( latest.bodies.data ) );
-			}
-		}
-
-	</script>
 </body>
 </html>

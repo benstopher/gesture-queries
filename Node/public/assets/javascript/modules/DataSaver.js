@@ -54,6 +54,14 @@ DataSaver.prototype = {
 			this._onSaveData( state )
 		}
 	},
+	setUpdateInterval: function( newInterval ){
+		var that = this;
+		this.storeInterval = newInterval;
+		clearInterval( this.interval );
+		this.interval = setInterval( function(){
+			that.save();
+		}, this.storeInterval );
+	},
 	setData: function( data ){
 		this.data = data;
 	},

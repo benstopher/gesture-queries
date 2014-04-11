@@ -1,4 +1,4 @@
-Input = function( _ele ){
+Input = function( _ele, _saveInterval ){
 	this.ele = _ele;
 	this.debug = false;
 	this.speech = new GetSpeech();
@@ -19,7 +19,7 @@ Input = function( _ele ){
 				source: this.hands,
 			}
 		],
-		10000
+		_saveInterval
 	);
 };
 

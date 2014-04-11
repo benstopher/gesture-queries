@@ -25,7 +25,7 @@ GetBodies.prototype = {
 			this.onStart();
 	},
 	onResult: function(){ /* override me */ },
-	_onResult: function( frame ){	
+	_onResult: function( frame ){
 		this.frames.push( frame );
 
 		if( typeof this.onResult === 'function' )
