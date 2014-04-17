@@ -1,25 +1,32 @@
 var LineChart = function( _ele, _w, _h ){
 	this.eleString = _ele;
 	this.ele = d3.select( this.eleString );
-	this.margin = {top: 100, right: 100, bottom: 100, left: 100},
+	this.margin = {top: 0, right: 0, bottom: 0, left: 0},
 	this.width = _w - this.margin.left - this.margin.right;
 	this.height = _h - this.margin.top - this.margin.bottom;
-
+	this.adaptableY = true;
+	this.interpolation = true;
 	this.init();
 };
 
 LineChart.prototype = {
 	addLine: function( id ){
+		var that = this;
 		var c = "line ";
 		if( id ){
 			c += " line-" + id;
 		}
 		this.svg.append("path")
     		.attr("class", c )
-    		.attr("d", this.line( [] ) );
+    		.attr("d", this.line( [] ) )
+    		.style( "stroke", function(d,i) { return that.colour( i ); });
 	},
 	init: function(){
 		var that = this;
+
+		this.colour = d3.scale.ordinal()
+  			.range( help.colours );
+
 		this.x = d3.time.scale()
 		    .range([0, this.width]);
 
@@ -48,6 +55,27 @@ LineChart.prototype = {
     	this.addLine( 1 );
 
 	},
+	setInterpolation: function( to ){
+		var that = this;
+		this.interpolate = to;
+		if( to ){
+			this.line = d3.svg.line()
+		   	 	.x(function(d) { return that.x(d.time); })
+		    	.y(function(d) { return that.y(d.val); })
+		    	.interpolate( "basis" );
+		} else {
+			this.line = d3.svg.line()
+		    .x(function(d) { return that.x(d.time); })
+		    .y(function(d) { return that.y(d.val); })
+		    .interpolate( false );
+		}
+	},
+	setAdaptableY: function( to, _min, _max ){
+		this.adaptableY = to;
+		if( !to ){
+			this.y.domain( [_min, _max] );
+		}
+	},
 	addData: function( data ){
 		var that = this;
 		this.data = data;
@@ -59,16 +87,23 @@ LineChart.prototype = {
 			});
 
 			this.x.domain(d3.extent( idData, function(d) { return d.time; }));
-			this.y.domain(d3.extent( idData, function(d) { return d.val; }));
+			if( this.adaptableY ){
+				this.y.domain(d3.extent( idData, function(d) { return d.val; }));
+			}
 
 			if( this.svg.selectAll(".line-" + id ).size() < 1 ){
 				this.addLine( id );
 			}
-
-			this.svg.selectAll(".line-" + id )
-			    .datum( idData ) // set the new data
-			    .transition()
-	            .attr("d", this.line ); // apply the new data values
+			if( this.interpolate ){
+				this.svg.selectAll(".line-" + id )
+				    .datum( idData ) // set the new data
+				    .transition()
+		            .attr("d", this.line ); // apply the new data values
+		    } else {
+		    		this.svg.selectAll(".line-" + id )
+				    .datum( idData ) // set the new data
+		            .attr("d", this.line ); // apply the new data values
+		    }
 	    }
 	},
 

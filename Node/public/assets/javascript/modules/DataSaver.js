@@ -2,6 +2,10 @@ var DataSaver = function( _sources, _storeInterval ){
 	this.sources = _sources;
 	this.storeInterval = _storeInterval || 1000;
 	this.timer = new Timer();
+	this.socket = io.connect( 'http://localhost/data' );
+	this.socket.on('data-write-success', function( data ){
+		console.log( 'saved file as', data );
+	});
 	this.data = {
 
 	}
@@ -51,8 +55,11 @@ DataSaver.prototype = {
 		}
 		if( someNewData ){
 			this.data.states.push( state );
-			this._onSaveData( state )
+			this._onSaveData( state );
 		}
+	},
+	saveToServer: function(){
+		this.socket.emit( 'save-data', this.data );
 	},
 	setUpdateInterval: function( newInterval ){
 		var that = this;

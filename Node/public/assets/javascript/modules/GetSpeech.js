@@ -56,6 +56,21 @@ GetSpeech.prototype = {
 	getLatestStore: function(){
 		var words = this.transcript.split( ' ' );
 		return words[ words.length - 1 ];
+	},
+	getLastXStore: function( count ){
+		var words = this.transcript.split( ' ' );
+		var out = '';
+		var start = words.length - count - 1;
+		if( start < 0 ){
+			start = 0;
+		}
+		for( var i = start; i < words.length; i++ ){
+			if( i > start ){
+				out+= ' '; 
+			}
+			out += words[ i ];
+		}
+		return out;
 	},	
 	clearStore: function(){
 		var out = getNewTranscript();

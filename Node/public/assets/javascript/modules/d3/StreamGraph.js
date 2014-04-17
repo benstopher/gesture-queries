@@ -1,7 +1,7 @@
 var StreamGraph = function( _ele, _w, _h ){
 	this.eleString = _ele;
 	this.ele = d3.select( this.eleString );
-	this.margin = {top: 100, right: 100, bottom: 100, left: 100},
+	this.margin = {top: 0, right: 0, bottom: 0, left: 0},
 	this.width = _w - this.margin.left - this.margin.right;
 	this.height = _h - this.margin.top - this.margin.bottom;
 
@@ -14,19 +14,22 @@ var StreamGraph = function( _ele, _w, _h ){
 StreamGraph.prototype = {
 	stack: d3.layout.stack().offset("wiggle"),
 	addLine: function( id ){
+		var that = this;
 		var c = "stream";
 		if( id ){
 			c += " stream-" + id;
 		}
+		this.numberLayers++;
 		this.svg.append("path")
     		.attr("class", c )
-    		.attr("d", this.area( [] ) );
+    		.attr("d", this.area( [] ) )
+    		.style( "fill", function() { return that.colour( help.colours.length % that.numberLayers ); });
 	},
 	init: function(){
 		var that = this;
 
-		this.color = d3.scale.linear()
-    		.range(["#ff0000", "#00ff00"]);
+		this.colour = d3.scale.ordinal()
+  			.range( help.colours );
 
     	this.x = d3.time.scale()
 		    .range([0, this.width]);

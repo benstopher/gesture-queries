@@ -1,24 +1,33 @@
-Input = function( _ele, _saveInterval ){
-	this.ele = _ele;
+Input = function( _$ele, _saveInterval, _setSpeech, _setBodies, _setHands ){
+	this.$ele = _$ele;
 	this.debug = false;
-	this.speech = new GetSpeech();
-	this.bodies = new GetBodies();
-	this.hands = new GetHands();
+	this.setSpeech = _setSpeech || false;
+	this.setBodies = _setBodies || false;
+	this.setHands = _setHands || false;
+	var saverSources = [];
+	if( this.setSpeech ){
+		this.speech = new GetSpeech();
+		saverSources.push({
+			title: "words",
+			source: this.speech
+		});
+	}
+	if( this.setBodies ){
+		this.bodies = new GetBodies();
+		saverSources.push({
+			title: "bodies",
+			source: this.bodies
+		});
+	}
+	if( this.setHands ){
+		this.hands = new GetHands();
+		saverSources.push({
+			title: "hands",
+			source: this.hands
+		});
+	}
 	this.saver = new DataSaver(
-		[
-			{ 
-				title: "bodies",
-				source: this.bodies
-			},
-			{
-				title: "words",
-				source: this.speech
-			},
-			{
-				title: "hands",
-				source: this.hands,
-			}
-		],
+		saverSources,
 		_saveInterval
 	);
 };
@@ -26,13 +35,19 @@ Input = function( _ele, _saveInterval ){
 Input.prototype = {
 	start: function(){
 		var that = this;
+
+		this.c = _o.createCanvas( this.$ele.width(), this.$ele.width() );
+		this.$ele.append( this.c.canvas );
 		
-		this.c = _o.createCanvas( window.innerWidth/2, window.innerHeight/2 );
-		this.ele.appendChild( this.c.canvas );
-		
-		this.bodies.start();
-		this.speech.start();
-		this.hands.start();
+		if( this.setBodies ){
+			this.bodies.start();
+		}
+		if( this.setSpeech ){
+			this.speech.start();
+		}
+		if( this.setHands ){
+			this.hands.start();
+		}
 		this.saver.start();
 	},
 	debugMode: function( to ){
@@ -52,20 +67,26 @@ Input.prototype = {
 		var ctx = this.c.ctx;
 		var cW = this.c.w;
 		var cH = this.c.h;
-		var bodies = this.bodies.getLatestStore();
-		var speech = this.speech.getLatestStore();
-		var hands = this.hands.getLatestStore();
+		if( this.setBodies ){
+			var bodies = this.bodies.getLatestStore();
+		}
+		if( this.setSpeech ){
+			var speech = this.speech.getLatestStore();
+		}
+		if( this.setHands ){
+			var hands = this.hands.getLatestStore();
+		}
 		ctx.clearRect( 0, 0, cW, cH );
 		ctx.fillStyle = "#000000";
 		//render kinect info
-		if( bodies ){
+		if( bodies && this.setBodies ){
 			var pJoint;
 			for( var j in bodies.skeleton ){
 				ctx.fillStyle = "#000000";
 				var joint = new _o.vec( 
 					_o.mapValue( bodies.skeleton[j].x, 0, 1, 0, cW ),
 					_o.mapValue( bodies.skeleton[j].y, 0, 1, 0, cH ),
-					_o.mapValue(bodies.skeleton[j].z, 0, 1, 25, 5 )
+					_o.mapValue(bodies.skeleton[j].z, 0, 1, 10, 5 )
 				);
 				if( 
 					(j === 'leftHand' && bodies.metrics.leftHandRaised) 
@@ -73,38 +94,39 @@ Input.prototype = {
 				){
 					ctx.fillStyle = "#FF0000";
 				}
-				_o.render.fillCircle( ctx, joint.x, joint.y, joint.z );
+				_o.render.fillCircle( ctx, joint.x, joint.y, 5 );
 									
 				pJoint = new _o.vec();
 				pJoint.copyFrom( joint );
 			}
-			ctx.fillStyle = "#FF0000";
+			ctx.fillStyle = "#00FF00";
 			var height = _o.mapValue( bodies.metrics.height, 0, 1, 0, cH );
 			ctx.fillRect( 0, cH - height, 30, cH );
 			var x = _o.mapValue( bodies.skeleton.leftHand.x, 0, 1, 0, cW );
 			var y = _o.mapValue( bodies.skeleton.leftHand.y, 0, 1, 0, cH );
 			var w = _o.mapValue( bodies.metrics.armSpan, 0, 1, 0, cW );
-			ctx.fillRect( x, y, w, 50 );
+			ctx.fillRect( x, y, w, 10 );
 
 		}
 		// render speech recognition words
-		if( speech ){
+		if( speech && this.setSpeech ){
 			ctx.fillStyle = "#FF0000";
 			ctx.font = "6em \'helvetica neue\'";
 			ctx.textAlign = "center"; 
 			ctx.textBaseline = "middle"; 
 			ctx.fillText( speech, cW/2, cH/2 );
 		}
-		// render leap motion info
-		if( hands ){
-			console.log( hands );
-		}
-
 	},
 	stop: function(){
-		this.bodies.stop();
-		this.speech.stop();
-		this.hands.stop();
+		if( this.setBodies ){
+			this.bodies.stop();
+		}
+		if( this.setSpeech ){
+			this.speech.stop();
+		}
+		if( this.setHands ){
+			this.hands.stop();
+		}
 		this.saver.stop();
 	},
 	getData: function(){

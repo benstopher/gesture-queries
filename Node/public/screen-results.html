@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Skeleton Queries</title>
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+	<style type="text/css">
+		#frame{
+			width: 1920px;
+			padding: 20px 0 20px 20px;
+			overflow-x: hidden;
+		}
+			#masonry-container{
+				width:1900px;
+				margin: 0;
+				padding: 0;
+				list-style-type: none;
+			}
+			.masonry-item{
+				width: 360px;
+				margin-bottom: 20px;
+				position: relative;
+			}
+				.masonry-item img{
+					width: 100%;
+					height: auto;
+					display: block;
+				}
+				.masonry-item h2{
+					position: absolute;
+					width: 100%;
+					top: 50%;
+					left: 0;
+					text-align: center;
+					line-height: 1.2em;
+					margin-top: -.6em;
+				}
+	</style>
+</head>
+<body>
+
+	<div id="frame">
+		<ul id="masonry-container">
+			
+		</ul>
+	</div>
+
+	<script src="assets/javascript/libs/zepto.js"></script>
+	<script src="assets/javascript/libs/masonry.pkgd.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="assets/javascript/libs/leap-0.4.3.js"></script>
+	<script src="assets/javascript/libs/d3.js"></script>
+	<script src="assets/javascript/libs/_o.js"></script>
+	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/modules/help.js"></script>
+	<script src="assets/javascript/modules/Timer.js"></script>
+	<script src="assets/javascript/modules/GetBodies.js"></script>
+	<script src="assets/javascript/modules/GetHands.js"></script>
+	<script src="assets/javascript/modules/GetSpeech.js"></script>
+	<script src="assets/javascript/modules/DataSaver.js"></script>
+	<script src="assets/javascript/modules/Input.js"></script>
+	<script src="assets/javascript/modules/d3/LineChart.js"></script>
+	<script src="assets/javascript/modules/d3/StreamGraph.js"></script>
+	<script src="assets/javascript/modules/d3/DonutChart.js"></script>
+	<script src="assets/javascript/modules/d3/ForceNodeChart.js"></script>
+	<script src="assets/javascript/modules/WaveformRenderer.js"></script>
+	<script src="assets/javascript/modules/SoundVsSilence.js"></script>
+	<script src="assets/javascript/modules/kimono/Kimono.js"></script>
+	<script src="assets/javascript/modules/QueryMaker.js"></script>
+	<script src="assets/javascript/scratch_data_conversions.js"></script>
+	<script>
+		var msnry = new Masonry( '#masonry-container', {
+			columnWidth: 380,
+			itemSelector: '.masonry-item'
+		});
+		var addSome = function(){
+			var eles = [];
+			for( var i = 0; i < 13; i++ ){
+				var $item = $('<li class="masonry-item"></li>');
+				var $img = $('<img src="http://placehold.it/640x' + Math.floor((Math.random() * 480) + 300 ) + '">');
+				var $title = $('<h2>Title Text</h2>');
+				$item.append( $title );
+				$item.append( $img ); 
+				eles.push( $item[0] );
+				
+			}
+			$('#masonry-container').prepend( eles );
+			msnry.prepended( eles );
+			setTimeout( function(){
+				addSome();
+			}, 5000 )
+		}
+		addSome();
+	</script>
+</body>
+</html>

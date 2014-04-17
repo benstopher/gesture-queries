@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Skeleton Queries</title>
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+</head>
+<body>
+
+	<div id="frame">
+		<div class="row">
+			<div class="row__part quarter">
+				<section>
+					<div id="graph-donut-movement">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">Movement vs. Stillness</h1>
+					</header>
+				</section>
+			</div><!--
+		 --><div class="row__part quarter">
+				<section>
+					<div id="graph-donut-sound">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">Sound vs. Silence</h1>
+					</header>
+				</section>
+			</div><!--
+		 --><div class="row__part quarter">
+				<section>
+					<div id="graph-donut-hands">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">(Hands) Open vs. Closed</h1>
+					</header>
+				</section>
+			</div><!--
+		 --><div class="row__part quarter">
+				<section>
+					<div id="canvas-skeletons">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">Skeletons</h1>
+					</header>
+				</section>
+			</div>
+		</div>
+		<div class="row">
+			<div class="row__part half">
+				<section>
+					<div id="graph-line-length" class="shrink-graph-height">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">User Height</h1>
+					</header>
+				</section>
+			</div><!--
+		 --><div class="row__part half">
+				<section>
+					<div id="graph-line-span" class="shrink-graph-height">
+						
+					</div>
+					<header>
+						<h1 class="graph-title">Arm Span</h1>
+					</header>
+				</section>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="assets/javascript/libs/zepto.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="assets/javascript/libs/leap-0.4.3.js"></script>
+	<script src="assets/javascript/libs/d3.js"></script>
+	<script src="assets/javascript/libs/_o.js"></script>
+	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/modules/help.js"></script>
+	<script src="assets/javascript/modules/Timer.js"></script>
+	<script src="assets/javascript/modules/GetBodies.js"></script>
+	<script src="assets/javascript/modules/GetHands.js"></script>
+	<script src="assets/javascript/modules/GetSpeech.js"></script>
+	<script src="assets/javascript/modules/DataSaver.js"></script>
+	<script src="assets/javascript/modules/Input.js"></script>
+	<script src="assets/javascript/modules/d3/LineChart.js"></script>
+	<script src="assets/javascript/modules/d3/StreamGraph.js"></script>
+	<script src="assets/javascript/modules/d3/DonutChart.js"></script>
+	<script src="assets/javascript/modules/d3/ForceNodeChart.js"></script>
+	<script src="assets/javascript/modules/WaveformRenderer.js"></script>
+	<script src="assets/javascript/modules/SoundVsSilence.js"></script>
+	<script src="assets/javascript/modules/kimono/Kimono.js"></script>
+	<script src="assets/javascript/modules/QueryMaker.js"></script>
+	<script src="assets/javascript/scratch_data_conversions.js"></script>
+	<script>
+		var SoundVsSilence = new SoundVsSilence( $('#graph-donut-sound'), $('#graph-donut-sound').width(), $('#graph-donut-sound').width() );
+
+		var lineChart_hands = new LineChart( '#graph-line-span', $('#graph-line-span').width(), $('#graph-line-span').width() * 0.1);
+		var lineChart_length = new LineChart( '#graph-line-length', $('#graph-line-length').width(), $('#graph-line-length').width() * 0.1 );
+		var donutChart_movement_not = new DonutChart( '#graph-donut-movement', $('#graph-donut-movement').width(), $('#graph-donut-movement').width() );
+		var donutChart_hands_open_closed = new DonutChart( '#graph-donut-hands', $('#graph-donut-hands').width(), $('#graph-donut-hands').width() );
+
+		var input = new Input( $('#canvas-skeletons') , 1000/30, false, true, true );
+		input.start();
+		input.debugMode( true );
+
+		input.saver.onSaveData = function( latest, all ){
+			var allBodies = calculateAllBodies( all );
+			var allHands = calculateAllHands( all );
+
+			if( latest.bodies ){
+				lineChart_hands.addData( bodiesHandsToLineChart( allBodies ) );
+				lineChart_length.addData( bodiesHeightToLineChart( allBodies) );
+				donutChart_movement_not.addData( bodiesMotionToDonutChart( allBodies ) );
+			}
+			if( latest.hands ){
+				donutChart_hands_open_closed.addData( handsOpenToDonutChart( allHands ) );
+			}
+		}
+	</script>
+</body>
+</html>

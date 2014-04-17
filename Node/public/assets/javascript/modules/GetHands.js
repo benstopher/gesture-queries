@@ -1,3 +1,5 @@
+var isLog = 0;
+
 GetHands = function(){
 	var that = this;
 	this.leap = new Leap.Controller({
@@ -26,12 +28,15 @@ GetHands.prototype = {
 		if( typeof this.onStart === 'function' )
 			this.onStart();
 	},
-	onResult: function(){ /* override me */ },
-	_onResult: function( frame ){		
-		this.frames.push( frame );
+	onResult: function( frame ){ /* override me */ },
+	_onResult: function( frame ){
+		var data = this.parseFrame( frame );
+		if( data ){
+			this.frames.push( data );
 
-		if( typeof this.onResult === 'function' )
-			this.onResult( frame );
+			if( typeof this.onResult === 'function' )
+				this.onResult( data );
+		}
 	},
 	getAllStore: function(){
 		return this.frames;
@@ -51,5 +56,32 @@ GetHands.prototype = {
 		var out = getNewFrames();
 		this.frames = [];
 		return out;
+	},
+	parseHand: function( hand, timestamp ){
+		return {
+			timestamp: timestamp,
+			id: hand.id,
+			sphereRadius: hand.sphereRadius,
+			orientation: {
+				pitch: hand.pitch(),
+			    yaw: hand.yaw(),
+			    roll: hand.roll()
+			},
+			metrics: {}
+		}
+	},
+	parseFrame: function( frame ){
+		if( frame.hands.length < 1 ){
+			return false;
+		}
+		var timestamp = (new Date()).getTime();
+		var data = {
+			timestamp: timestamp,
+			hands: []
+		};
+		for( var i in frame.hands ){
+			data.hands.push( this.parseHand( frame.hands[i], timestamp ) );
+		}
+		return data;
 	}
 };

@@ -4,9 +4,71 @@
 	<meta charset="UTF-8">
 	<title>Tracker</title>
 	<style>
-		body {
-		  font: 10px sans-serif;
+		html, body{
+			margin: 0;
+			background: #000000;
+			color: #ffffff;
 		}
+		body {
+			font-family: 'helvetica neue', sans-serif;
+			font-size: 12px;
+			letter-spacing: 1px;
+		}
+		.graphs{
+			padding-top:4em;
+		}
+			.graphs section{
+				overflow-x: hidden;
+				margin-bottom: 4em;
+			}
+				.graphs section header{
+					text-align: center;
+				}
+				.graphs section header h1{
+					display: inline-block;
+					font-weight: bold;
+					text-align: center;
+					margin: 0 auto;
+				}
+					.graphs section header h1:after{
+						content: ' ';
+						display: block;
+						border-bottom: 3px solid #ffffff;
+					}
+
+				.graphs section div{
+					margin: 2em 0;
+					//background: #efefef;
+				}
+		
+		#results .query{
+			margin: 2em 1em 1em;
+			font-size: 10em;
+			text-align: center;
+			text-transform: uppercase;
+			color: #ffffff;
+		}		
+		#results .results{
+			color: #ffffff;
+		}
+			#results .results ul{
+				list-style-type: none;
+				padding: 0;
+			}
+				#results .results ul li{
+					box-sizing: border-box;
+					display: block;
+					padding: 4em;
+					margin: 0;
+				}
+
+			#results .results img{
+				width: 100%;
+				height: auto;
+			}
+
+	</style>
+	<style>
 		.line {
 		  fill: none;
 		  stroke: #000000;
@@ -54,26 +116,85 @@
 			.stream-6{
 				fill: #00FFFF;
 			}
+		.center-node{
+			fill: #FFFF00;
+		}
+		.node{
+
+		}
+			.node circle{
+				fill: #FFFFFF;
+			}
+			.node text{
+				fill: #FFFFFF;
+				text-transform: uppercase;
+			}
+				.node text.center{
+					font-size: 1.2em;
+				}
+			.link{
+				stroke-width: 2;
+				stroke: #ffffff;
+			}
 	</style>
 </head>
 <body>
 
-<article>
-	<section id="graph-line">
-		
+<article class="graphs">
+	<section>
+		<header>
+			<h1>Words</h1>
+		</header>
+		<div id="graph-node-words"></div>
 	</section>
-	<section id="graph-stream">
-		
+	<section>
+		<header>
+			<h1>Audio</h1>
+		</header>
+		<div id="graph-line-audio"></div>
 	</section>
-	<nav>
+	<section>
+		<header>
+			<h1>Movement vs Stillness</h1>
+		</header>
+		<div id="graph-donut-movement"></div>
+	</section>
+	<section>
+		<header>
+			<h1>Hand Openness</h1>
+		</header>
+		<div id="graph-stream-sphere"></div>	
+	</section>
+	<section>
+		<header>
+			<h1>Arm Span</h1>
+		</header>
+		<div id="graph-line-span"></div>	
+	</section>
+	<section>
+		<header>
+			<h1>Person Height</h1>
+		</header>
+		<div id="graph-stream-length"></div>
+	</section>
+
+	<nav style="display: none;">
 		<button id="btn-toggle-accumulate">Toggle Cumulative Graphing</button>
 	</nav>
+
 </article>
 
+	<article id="results">
+		<h1 class="query"></h1>
 
-	<section id="output">
+		<div class="results">
+			
+		</div>
+	</article>
+
+	<article id="output">
 		
-	</section>
+	</article>
 	
 
 	<script src="assets/javascript/libs/zepto.js"></script>
@@ -86,6 +207,8 @@
 	<script src="assets/javascript/libs/_o.js"></script>
 	<script src="assets/javascript/libs/_o.render.js"></script>
 
+	<script src="assets/javascript/modules/help.js"></script>
+
 	<script src="assets/javascript/modules/Timer.js"></script>
 	<script src="assets/javascript/modules/GetBodies.js"></script>
 	<script src="assets/javascript/modules/GetHands.js"></script>
@@ -95,8 +218,15 @@
 
 	<script src="assets/javascript/modules/d3/LineChart.js"></script>
 	<script src="assets/javascript/modules/d3/StreamGraph.js"></script>
+	<script src="assets/javascript/modules/d3/DonutChart.js"></script>
+	<script src="assets/javascript/modules/d3/ForceNodeChart.js"></script>
+
+	<script src="assets/javascript/modules/WaveformRenderer.js"></script>
+
+	<script src="assets/javascript/modules/kimono/Kimono.js"></script>
+	<script src="assets/javascript/modules/QueryMaker.js"></script>
 
 	<script src="assets/javascript/main.js"></script>
 
 </body>
-</html>
+</html>	

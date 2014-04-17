@@ -74,7 +74,18 @@ void draw()
     }      
   }    
 }
-PVector kinectToNormalised( PVector v ){
+PVector kinectToWorldNormalised( PVector v ){
+  PVector projective = new PVector();
+  context.convertRealWorldToProjective( v, projective );
+  PVector norm = new PVector(
+    map( projective.x, 0, 640, 0, 1 ),
+    map( projective.y, 0, 480, 0, 1 ),
+    map( projective.z, 0, 10000, 0, 1 ) // this may not be correct...
+  );
+  return norm;
+}
+
+PVector kinectToBodyNormalised( PVector v, PVector centerOfMass  ){
   PVector projective = new PVector();
   context.convertRealWorldToProjective( v, projective );
   PVector norm = new PVector(
@@ -107,6 +118,8 @@ JSONObject PVectorToJSONObject( PVector v ){
 
 void sendSkeleton(int userId)
 {
+  //float[] bounds = new float[0];
+  //PVector centerOfMass = new PVector();
   PVector head = new PVector();
   PVector neck = new PVector();
   PVector rightShoulder = new PVector();
@@ -122,6 +135,10 @@ void sendSkeleton(int userId)
   PVector leftHip = new PVector();
   PVector leftKnee = new PVector();
   PVector leftFoot = new PVector();
+  
+  //context.getBoundingBox( userId, bounds );
+ // printArray( bounds );
+  //context.getCoM( userId, centerOfMass ); 
   
   context.getJointPositionSkeleton(userId, context.SKEL_HEAD, head);
   context.getJointPositionSkeleton(userId, context.SKEL_NECK, neck);
@@ -139,21 +156,21 @@ void sendSkeleton(int userId)
   context.getJointPositionSkeleton(userId, context.SKEL_LEFT_KNEE, leftKnee);
   context.getJointPositionSkeleton(userId, context.SKEL_LEFT_FOOT, leftFoot);
  
-  head = kinectToNormalised( head );
-  neck = kinectToNormalised( neck );
-  rightShoulder = kinectToNormalised( rightShoulder );
-  rightElbow = kinectToNormalised( rightElbow );
-  rightHand = kinectToNormalised( rightHand );
-  leftShoulder = kinectToNormalised( leftShoulder );
-  leftElbow = kinectToNormalised( leftElbow );
-  leftHand = kinectToNormalised( leftHand );
-  torso = kinectToNormalised( torso );
-  rightHip = kinectToNormalised( rightHip );
-  rightKnee = kinectToNormalised( rightKnee );
-  rightFoot = kinectToNormalised( rightFoot );
-  leftHip = kinectToNormalised( leftHip );
-  leftKnee = kinectToNormalised( leftKnee );
-  leftFoot = kinectToNormalised( leftFoot );
+  head = kinectToWorldNormalised( head );
+  neck = kinectToWorldNormalised( neck );
+  rightShoulder = kinectToWorldNormalised( rightShoulder );
+  rightElbow = kinectToWorldNormalised( rightElbow );
+  rightHand = kinectToWorldNormalised( rightHand );
+  leftShoulder = kinectToWorldNormalised( leftShoulder );
+  leftElbow = kinectToWorldNormalised( leftElbow );
+  leftHand = kinectToWorldNormalised( leftHand );
+  torso = kinectToWorldNormalised( torso );
+  rightHip = kinectToWorldNormalised( rightHip );
+  rightKnee = kinectToWorldNormalised( rightKnee );
+  rightFoot = kinectToWorldNormalised( rightFoot );
+  leftHip = kinectToWorldNormalised( leftHip );
+  leftKnee = kinectToWorldNormalised( leftKnee );
+  leftFoot = kinectToWorldNormalised( leftFoot );
  
   JSONObject skeleton = new JSONObject();
   skeleton.setJSONObject( "head", PVectorToJSONObject( head ) );
