@@ -64,10 +64,12 @@
 	<script>
 
 		var socket = io.connect( 'http://localhost/query-source' );
+		var saveSocket = io.connect( 'http://localhost/save-words' );
 		var input = new Input( $('#canvas-skeletons') , 1000/30, true, false, false );
 		var forceNodeChart_words = new ForceNodeChart( '#graph-node-words', $('#graph-node-words').width(),  $('#graph-node-words').height() );
 		var waveform = new WaveformRenderer( $('#graph-line-audio'), $('#graph-line-audio').width(), window.innerHeight * 0.2 );
 		var wordChartAdditions = 0;
+		var lastNodeAdditions = '';
 		var updateWordChart = function(){
 
 			if( wordChartAdditions > 10 ){
@@ -76,21 +78,36 @@
 			}
 			//var d = "this is a test sentence to test things with it is only intended for the purposes of testing and testing is what its good at";
 			var d = input.speech.getLastXStore( 25 );
-			//var d = input.speech.getNewStore();
+			if( new String( d ).valueOf() !== new String( lastNodeAdditions ).valueOf() ){
+				lastNodeAdditions = d;
+				d = wordsToNodeChart( d );
+				forceNodeChart_words.addData( d );
+				wordChartAdditions++;
+				if( wordChartAdditions%2 == 0 ){
+					$('#graph-node-words').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+					saveSocket.emit("save-data", $('#graph-node-words').html() );
+				}
+			}
 
-			d = wordsToNodeChart( d );
-			forceNodeChart_words.addData( d );
-			wordChartAdditions++;
 			setTimeout( function(){
 				updateWordChart();
 			}, 10000 );
 		}
+			setTimeout( function(){
+				
+			}, 5000);
 
+		var lastEmitted = '';
+		
 		var sendNewQuery = function(){
-			socket.emit("data", input.speech.getLastXStore( 5 ) );
+			var emit = input.speech.getLastXStore( 2 );
+			if( new String(emit).valueOf() !== new String(lastEmitted).valueOf() ){
+				lastEmitted = emit;
+				socket.emit("data", emit );
+			}
 			setTimeout( function(){
 				sendNewQuery();
-			}, 7000 );
+			}, 20000 );
 		}
 
 		input.start();

@@ -1,4 +1,4 @@
-var DonutChart = function( _ele, _w, _h ){
+var DonutChart = function( _ele, _w, _h, _clr ){
 	this.eleString = _ele;
 	this.ele = d3.select( this.eleString );
 	this.margin = {top: 0, right: 0, bottom: 0, left: 0},
@@ -7,6 +7,7 @@ var DonutChart = function( _ele, _w, _h ){
 	this.radius = Math.min( this.width, this.height) / 2;
 	this.numberLayers = 1;
 	this.perLayer = 100;
+	this.clr = _clr || help.piecolours[0];
 
 	this.init();
 };
@@ -25,7 +26,7 @@ DonutChart.prototype = {
 
   		//this.colour = d3.scale.category20();
   		this.colour = d3.scale.ordinal()
-  			.range( help.colours );
+  			.range( this.clr );
   		//console.log( this.colour.domain() );
 
 		this.svg = this.ele.append("svg")
@@ -48,7 +49,7 @@ DonutChart.prototype = {
 	},
 	addData: function( data ){
 		var that = this;
-		this.colour.domain( [ 0, data.length ] );
+		this.colour.domain( [ 0, data.length - 1] );
 
 		var slice = this.svg.select(".slices").selectAll("path.slice")
 			.data( this.pie( data ) );

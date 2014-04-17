@@ -1,50 +1,15 @@
 .line {
 		  fill: none;
 		  stroke: #FFFFFF;
-		  stroke-width: 1.5px;
+		  stroke-width: 2px;
 		}
-			.line-1{
-				stroke: #FF0000;
-			}
-			.line-2{
-				stroke: #00FF00;
-			}
-			.line-3{
-				stroke: #0000FF;
-			}
-			.line-4{
-				stroke: #FFFF00;
-			}
-			.line-5{
-				stroke: #FF00FF;
-			}
-			.line-6{
-				stroke: #00FFFF;
-			}
-			
+		
 		.stream {
 		  fill: #CCCCCC;
 		  stroke: none;
 		  stroke-width: 0;
 		}
-			.stream-1{
-				fill: #FF0000;
-			}
-			.stream-2{
-				fill: #00FF00;
-			}
-			.stream-3{
-				fill: #0000FF;
-			}
-			.stream-4{
-				fill: #FFFF00;
-			}
-			.stream-5{
-				fill: #FF00FF;
-			}
-			.stream-6{
-				fill: #00FFFF;
-			}
+			
 		.center-node{
 			fill: #FFFF00;
 		}
@@ -59,13 +24,17 @@
 				text-transform: uppercase;
 			}
 				.node text.center{
+					fill: #139748;
 					font-size: 1.2em;
 				}
+				.node circle.center{
+					fill: #139748;
+				}
 			.link{
-				stroke-width: 3px;
+				stroke-width: 2px;
 				stroke: #FFFFFF;
 			}
 
 #graph-line-length .line{
-	stroke-width: 3px;
+	stroke-width: 5px;
 }

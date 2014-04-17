@@ -14,7 +14,7 @@ Kinect.prototype = {
 	listen: function(){
 		var that = this;
 		this.osc.on( "message", function( msg, rinfo ){
-			console.log( 'kinect sent message ' );
+			//console.log( 'kinect sent message ' );
 			if( msg[0].indexOf( "/userfound" ) !== -1 ){
 				that.addUser( msg[1] );
 			}
@@ -23,7 +23,7 @@ Kinect.prototype = {
 			}
 			if( msg[0].indexOf( "/user/" ) !== -1 ){
 				var data = that.parseDataFromOSC( msg[0], msg[1] );
-				console.log( 'decode /user/ message ' +  data.id );
+				// console.log( 'decode /user/ message ' +  data.id );
 				that._onFrameUpdate( data );
 			}
 		});
@@ -59,7 +59,7 @@ Kinect.prototype = {
 			motion = motion / jointCount;
 		}
 
-		console.log( "MOTION: ", motion );
+		//console.log( "MOTION: ", motion );
 
 		var metrics = {
 			armSpan: rightHand.distanceTo( leftHand ),

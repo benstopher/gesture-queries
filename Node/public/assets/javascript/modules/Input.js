@@ -77,12 +77,12 @@ Input.prototype = {
 			var hands = this.hands.getLatestStore();
 		}
 		ctx.clearRect( 0, 0, cW, cH );
-		ctx.fillStyle = "#000000";
+		ctx.fillStyle = "#FFFFFF";
 		//render kinect info
 		if( bodies && this.setBodies ){
 			var pJoint;
 			for( var j in bodies.skeleton ){
-				ctx.fillStyle = "#000000";
+				ctx.fillStyle = "#FFFFFF";
 				var joint = new _o.vec( 
 					_o.mapValue( bodies.skeleton[j].x, 0, 1, 0, cW ),
 					_o.mapValue( bodies.skeleton[j].y, 0, 1, 0, cH ),
@@ -92,19 +92,21 @@ Input.prototype = {
 					(j === 'leftHand' && bodies.metrics.leftHandRaised) 
 					|| (j === 'rightHand' && bodies.metrics.rightHandRaised) 
 				){
-					ctx.fillStyle = "#FF0000";
+					ctx.fillStyle = "#F6742C";
 				}
-				_o.render.fillCircle( ctx, joint.x, joint.y, 5 );
+				_o.render.fillCircle( ctx, joint.x, joint.y, 3 );
 									
 				pJoint = new _o.vec();
 				pJoint.copyFrom( joint );
 			}
-			ctx.fillStyle = "#00FF00";
+
+			ctx.fillStyle = "#F6742C";
 			var height = _o.mapValue( bodies.metrics.height, 0, 1, 0, cH );
-			ctx.fillRect( 0, cH - height, 30, cH );
+			ctx.fillRect( cW - 10, cH - height, cW, cH );
 			var x = _o.mapValue( bodies.skeleton.leftHand.x, 0, 1, 0, cW );
 			var y = _o.mapValue( bodies.skeleton.leftHand.y, 0, 1, 0, cH );
 			var w = _o.mapValue( bodies.metrics.armSpan, 0, 1, 0, cW );
+			ctx.fillStyle = "#F6742C";
 			ctx.fillRect( x, y, w, 10 );
 
 		}

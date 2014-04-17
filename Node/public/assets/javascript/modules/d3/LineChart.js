@@ -19,13 +19,13 @@ LineChart.prototype = {
 		this.svg.append("path")
     		.attr("class", c )
     		.attr("d", this.line( [] ) )
-    		.style( "stroke", function(d,i) { return that.colour( i ); });
+    		.style( "stroke", function(d,i) {  return that.colour( id || 0  ); });
 	},
 	init: function(){
 		var that = this;
 
 		this.colour = d3.scale.ordinal()
-  			.range( help.colours );
+  			.range( help.linecolours );
 
 		this.x = d3.time.scale()
 		    .range([0, this.width]);

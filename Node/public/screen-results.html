@@ -20,6 +20,12 @@
 				width: 360px;
 				margin-bottom: 20px;
 				position: relative;
+
+			}
+			.masonry-item.no-img .filler{
+				background: #666666;
+				width: 360px;
+				height: 360px;
 			}
 				.masonry-item img{
 					width: 100%;
@@ -34,6 +40,8 @@
 					text-align: center;
 					line-height: 1.2em;
 					margin-top: -1.2em;
+					padding: 0 20px;
+					box-sizing: border-box;
 				}
 					.masonry-item hgroup h1{
 						font-size: 2em;
@@ -43,6 +51,19 @@
 					.masonry-item hgroup h2{
 						font-size: 0.7em;
 						font-weight: 200;
+					}
+
+					.masonry-item span{
+						position: absolute;
+						bottom: 20px;
+						display: block;
+						width: 100%;
+						text-align: center;
+						padding: 0 20px;
+						box-sizing: border-box;
+					}
+					.masonry-item span:before{
+						content: "@ ";
 					}
 	</style>
 </head>
@@ -78,6 +99,7 @@
 	<script src="assets/javascript/modules/QueryMaker.js"></script>
 	<script src="assets/javascript/scratch_data_conversions.js"></script>
 	<script>
+		var timer = new Timer();
 		var msnry = new Masonry( '#masonry-container', {
 			columnWidth: 380,
 			itemSelector: '.masonry-item'
@@ -88,34 +110,50 @@
 		this.socket = io.connect( 'http://localhost/query-destination' );
 
 		this.socket.on('query-data', function( data ){
-			lastQuery = data;
-			q.query( data );
+			console.log( "DATA: ", data );
+			if( data.length > 0 ){
+				lastQuery = data;
+				q.query( data );
+			}
 		});
 
 		q.onResult = function( results ){
+			console.log( "RESULTS: ", results );
+			console.log( "LAST QUERY: ", lastQuery );
 			var eles = [];
 			for( var i = 0; i < results.length; i++ ){
-				if( results[i] ){
+				if( typeof results[i] !== 'undefined' ){
 					for( var j = 0; j < results[i].length; j++ ){
-						if( results[i][j].image.src != undefined ){
-							var termFromQuery = lastQuery.split(' ');
-							var termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
-							var $item = $('<li class="masonry-item"></li>');
-							var $header = $('<hgroup></hgroup>' );
-							var $title = $( '<h1>' + termFromQuery + '</h1>' );		
+						var termFromQuery = lastQuery.split(' ');
+						var termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+						var $item = $('<li class="masonry-item"></li>');
+						var $header = $('<hgroup></hgroup>' );
+						console.log( "TITLE: " + termFromQuery );
+						var $title = $( '<h1>' + termFromQuery + '</h1>' );							
+						var $timestamp = $('<span>' + timer.getTimestamp() + '</span>')
+						
+						$header.append( $title );
+						if( results[ i ][ j ].title !== undefined ){	
 							var $subtitle = $( '<h2>' + results[ i ][ j ].title.text + '</h2>' );
-							var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
-							$header.append( $title );
 							$header.append( $subtitle );
-							$item.append( $header );
+						}
+						$item.append( $header );
+						$item.append( $timestamp );
+						
+						if( results[i][j].image.src != undefined ){
+							var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
 							$item.append( $img );
-							eles.push( $item[0] );
-						}		
-					}
-					$('#masonry-container').prepend( eles );
-					msnry.prepended( eles );
+						} else {
+							$item.addClass( 'no-img' );
+							$item.append( '<div class="filler"></div>' );
+						}
+						
+						eles.push( $item[0] );
+					}		
 				}
 			}
+			$('#masonry-container').prepend( eles );
+			msnry.prepended( eles );
 		}
 	</script>
 </body>

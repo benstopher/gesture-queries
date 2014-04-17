@@ -98,12 +98,14 @@
 	<script src="assets/javascript/modules/QueryMaker.js"></script>
 	<script src="assets/javascript/scratch_data_conversions.js"></script>
 	<script>
+	var saveSocket = io.connect( 'http://localhost/save-charts' );
+
 		var SoundVsSilence = new SoundVsSilence( $('#graph-donut-sound'), $('#graph-donut-sound').width(), $('#graph-donut-sound').width() );
 
 		var lineChart_hands = new LineChart( '#graph-line-span', $('#graph-line-span').width(), $('#graph-line-span').width() * 0.1);
 		var lineChart_length = new LineChart( '#graph-line-length', $('#graph-line-length').width(), $('#graph-line-length').width() * 0.1 );
-		var donutChart_movement_not = new DonutChart( '#graph-donut-movement', $('#graph-donut-movement').width(), $('#graph-donut-movement').width() );
-		var donutChart_hands_open_closed = new DonutChart( '#graph-donut-hands', $('#graph-donut-hands').width(), $('#graph-donut-hands').width() );
+		var donutChart_movement_not = new DonutChart( '#graph-donut-movement', $('#graph-donut-movement').width(), $('#graph-donut-movement').width(), this.help.piecolours[1] );
+		var donutChart_hands_open_closed = new DonutChart( '#graph-donut-hands', $('#graph-donut-hands').width(), $('#graph-donut-hands').width(), this.help.piecolours[2] );
 
 		var input = new Input( $('#canvas-skeletons') , 1000/30, false, true, true );
 		input.start();
@@ -122,6 +124,18 @@
 				donutChart_hands_open_closed.addData( handsOpenToDonutChart( allHands ) );
 			}
 		}
+		setInterval( function(){
+			$('#graph-donut-movement').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			saveSocket.emit("save-data", $('#graph-donut-movement').html() );
+			$('#graph-donut-sound').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			saveSocket.emit("save-data", $('#graph-donut-sound').html() );
+			$('#graph-donut-hands').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			saveSocket.emit("save-data", $('#graph-donut-hands').html() );
+			$('#graph-line-length').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			saveSocket.emit("save-data", $('#graph-line-length').html() );
+			$('#graph-line-span').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			saveSocket.emit("save-data", $('#graph-line-span').html() );
+		}, 30000 );
 	</script>
 </body>
 </html>
