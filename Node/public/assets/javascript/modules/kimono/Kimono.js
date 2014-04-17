@@ -34,6 +34,7 @@ Kimono.prototype = {
 		    "crossDomain":true,
 		    "dataType":"jsonp",
 		    "success": function( data ){
+		    	data._original_query = value;
 		    	if( typeof callback === 'function' ){
 		    		callback( data );
 		    	}

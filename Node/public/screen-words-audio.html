@@ -62,6 +62,8 @@
 	<script src="assets/javascript/modules/QueryMaker.js"></script>
 	<script src="assets/javascript/scratch_data_conversions.js"></script>
 	<script>
+
+		var socket = io.connect( 'http://localhost/query-source' );
 		var input = new Input( $('#canvas-skeletons') , 1000/30, true, false, false );
 		var forceNodeChart_words = new ForceNodeChart( '#graph-node-words', $('#graph-node-words').width(),  $('#graph-node-words').height() );
 		var waveform = new WaveformRenderer( $('#graph-line-audio'), $('#graph-line-audio').width(), window.innerHeight * 0.2 );
@@ -84,8 +86,16 @@
 			}, 10000 );
 		}
 
-		input.start();
+		var sendNewQuery = function(){
+			socket.emit("data", input.speech.getLastXStore( 5 ) );
+			setTimeout( function(){
+				sendNewQuery();
+			}, 7000 );
+		}
 
+		input.start();
+		
+		sendNewQuery();
 		updateWordChart();
 
 	</script>

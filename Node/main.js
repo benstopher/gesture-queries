@@ -47,3 +47,18 @@ socket.of( '/data' ).on('connection', function( socket ) {
 		})
 	});	
 });
+
+
+var query_data = {};
+var queryDestSocket;
+socket.of('/query-destination' ).on('connection', function( socket ){
+	queryDestSocket = socket;
+})
+socket.of( '/query-source' ).on('connection', function( socket ) {	
+	socket.on( 'data', function( data ){
+		if( typeof queryDestSocket !== 'undefined' ){
+			console.log( "EMIT QUERY DATA", data );
+			queryDestSocket.emit( "query-data", data );
+		}
+	});	
+});

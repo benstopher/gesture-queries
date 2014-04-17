@@ -26,15 +26,24 @@
 					height: auto;
 					display: block;
 				}
-				.masonry-item h2{
+				.masonry-item hgroup{
 					position: absolute;
 					width: 100%;
 					top: 50%;
 					left: 0;
 					text-align: center;
 					line-height: 1.2em;
-					margin-top: -.6em;
+					margin-top: -1.2em;
 				}
+					.masonry-item hgroup h1{
+						font-size: 2em;
+						text-transform: uppercase;
+						font-weight: normal;
+					}
+					.masonry-item hgroup h2{
+						font-size: 0.7em;
+						font-weight: 200;
+					}
 	</style>
 </head>
 <body>
@@ -73,24 +82,41 @@
 			columnWidth: 380,
 			itemSelector: '.masonry-item'
 		});
-		var addSome = function(){
+		var lastQuery;
+		var q = new QueryMaker();
+		
+		this.socket = io.connect( 'http://localhost/query-destination' );
+
+		this.socket.on('query-data', function( data ){
+			lastQuery = data;
+			q.query( data );
+		});
+
+		q.onResult = function( results ){
 			var eles = [];
-			for( var i = 0; i < 13; i++ ){
-				var $item = $('<li class="masonry-item"></li>');
-				var $img = $('<img src="http://placehold.it/640x' + Math.floor((Math.random() * 480) + 300 ) + '">');
-				var $title = $('<h2>Title Text</h2>');
-				$item.append( $title );
-				$item.append( $img ); 
-				eles.push( $item[0] );
-				
+			for( var i = 0; i < results.length; i++ ){
+				if( results[i] ){
+					for( var j = 0; j < results[i].length; j++ ){
+						if( results[i][j].image.src != undefined ){
+							var termFromQuery = lastQuery.split(' ');
+							var termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+							var $item = $('<li class="masonry-item"></li>');
+							var $header = $('<hgroup></hgroup>' );
+							var $title = $( '<h1>' + termFromQuery + '</h1>' );		
+							var $subtitle = $( '<h2>' + results[ i ][ j ].title.text + '</h2>' );
+							var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
+							$header.append( $title );
+							$header.append( $subtitle );
+							$item.append( $header );
+							$item.append( $img );
+							eles.push( $item[0] );
+						}		
+					}
+					$('#masonry-container').prepend( eles );
+					msnry.prepended( eles );
+				}
 			}
-			$('#masonry-container').prepend( eles );
-			msnry.prepended( eles );
-			setTimeout( function(){
-				addSome();
-			}, 5000 )
 		}
-		addSome();
 	</script>
 </body>
 </html>
