@@ -6,6 +6,10 @@ var QueryMaker = function(){
 		new Kimono( "5r4qoam2", "dcadb593109c905afe255fd53a5b7eb8", "query" ), //creative review blog
 		new Kimono( "6jmfrscq", "dcadb593109c905afe255fd53a5b7eb8", "input" ), //visual complexity
 		new Kimono( "39ky2y6w", "dcadb593109c905afe255fd53a5b7eb8", "kimpath2" ), //popsci
+		new Kimono( "52g6adto", "dcadb593109c905afe255fd53a5b7eb8", "kimpath2" ), //butdoesitfloat
+		new Kimono( "5sfcl31k", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //booooooom
+		new Kimono( "3886gpy0", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //brainpickings
+		new Kimono( "5jh18v22", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //MOMA design and violence
 	];
 	this.results = [];
 	this.results.length = this.queries.length;
