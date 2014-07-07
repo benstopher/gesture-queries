@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Skeleton Queries</title>
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+	<style type="text/css">
+		html,body{
+			//overflow: hidden;
+		}
+		#frame{
+			padding: 0;
+		}
+		.col{
+			box-sizing: border-box;
+			width: 33%;
+			float: left;
+			padding: 1em 2em;
+		}
+		j1{
+			border-bottom: 3px solid white;
+		}
+		ul{
+			padding: 0;
+		}
+		li{
+			font-size: 1.4em;
+			list-style-type: none;
+			margin-bottom: 2em;
+			padding: 0;
+		}
+		li p{
+			margin-bottom: 1em;
+		}
+		li img{
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="frame">
+	<div class="col">
+			<h1>User Filtered</h1>
+			<ul id="results-user">
+				
+			</ul>
+		</div>
+		<div class="col">
+			<h1>Location Based</h1>
+			<ul id="results-location">
+				
+			</ul>
+		</div>
+		<div class="col">
+			<h1>All Results</h1>
+			<ul id="results-all">
+				
+			</ul>
+		</div>
+	</div>
+
+	<!-- page specific -->
+	<!-- none -->
+
+	<!-- libs -->
+	<script src="assets/javascript/libs/zepto.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="assets/javascript/libs/leap-0.4.3.js"></script>
+	<script src="assets/javascript/libs/d3.js"></script>
+	<script src="assets/javascript/libs/_o.js"></script>
+	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/libs/crypto-js-hmac-sha1.js"></script>
+	<script src="assets/javascript/libs/crypto-js-enc-base64.min.js"></script>
+	<script src="assets/javascript/libs/oauth-1.0a.js"></script>
+
+	<!-- custom -->
+	<script src="assets/javascript/modules/help.js"></script>
+	<script src="assets/javascript/modules/Timer.js"></script>
+	<script src="assets/javascript/modules/GetBodies.js"></script>
+	<script src="assets/javascript/modules/GetHands.js"></script>
+	<script src="assets/javascript/modules/GetSpeech.js"></script>
+	<script src="assets/javascript/modules/DataSaver.js"></script>
+	<script src="assets/javascript/modules/Input.js"></script>
+	<script src="assets/javascript/modules/d3/LineChart.js"></script>
+	<script src="assets/javascript/modules/d3/StreamGraph.js"></script>
+	<script src="assets/javascript/modules/d3/DonutChart.js"></script>
+	<script src="assets/javascript/modules/d3/ForceNodeChart.js"></script>
+	<script src="assets/javascript/modules/WaveformRenderer.js"></script>
+	<script src="assets/javascript/modules/SoundVsSilence.js"></script>
+	<script src="assets/javascript/modules/kimono/Kimono.js"></script>
+	<script src="assets/javascript/modules/social/Twitter.js"></script>
+	<script src="assets/javascript/modules/QueryMaker.js"></script>
+	<script src="assets/javascript/scratch_data_conversions.js"></script>
+
+
+	<script>
+		var $location = $('#results-location');
+		var $all = $('#results-all');
+		var $user = $('#results-user');
+		var twitter = new Twitter();
+		twitter.onResult = function( result ){
+			console.log( result );			
+			$(result.data.statuses).each( function( i ){
+				var $ele = $('<li>');
+				var $text = $('<p>');
+				$text.html( this.text );
+				$ele.append( $text );
+				$(this.entities.media ).each( function(){
+					if( this.type === 'photo' ){
+						var $img = $('<img>');
+						$img.attr( 'src', this.media_url );
+						$ele.append( $img );
+					}
+				});
+				if( result.type === 'search' ){
+					$all.append( $ele );
+				}
+				if( result.type === 'search-location' ){
+					$location.append( $ele );
+				}
+				if( result.type === 'user-timeline' ){
+					$user.append( $ele );
+				}
+			});
+		};
+		twitter.search( 'graphic design');
+		twitter.searchLocation( 'graphic design', '51.494695', '-0.101772', '10mi' );
+		twitter.userTimeline( 'benstopher' );
+	</script>
+</body>
+</html>

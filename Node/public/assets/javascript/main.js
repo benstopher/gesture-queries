@@ -1,30 +1,8 @@
-var ACCUMULATE = true;
-var accumulate_btn = document.getElementById( 'btn-toggle-accumulate' );
-var setAccumulate = function(){
-	if( ACCUMULATE ){
-		input.saver.setUpdateInterval( 25 );
-	} else {
-		input.saver.setUpdateInterval( 1000 );
-	}
-};
-
-
 var lineChart_hands = new LineChart( '#graph-line-span', window.innerWidth, window.innerHeight * 0.4 );
 var streamGraph_length = new StreamGraph( '#graph-stream-length', window.innerWidth, window.innerHeight * 0.4 );
 var streamGraph_sphereSize = new StreamGraph( '#graph-stream-sphere', window.innerWidth, window.innerHeight * 0.4 );
 var donutChart_movement_not = new DonutChart( '#graph-donut-movement', window.innerWidth, window.innerHeight * 0.7 );
 var forceNodeChart_words = new ForceNodeChart( '#graph-node-words', window.innerWidth, window.innerHeight * 0.7)
-
-var removeZigfuWatermark = (function(){
-	var removeWatermarkTimer = setInterval( function(){
-		var findWatermark = $('a[href="http://zigfu.com/watermark"]').parents('div');				
-		if( findWatermark.length !== 0 ){					
-			$('a[href="http://zigfu.com/watermark"]').parents('div').remove();
-			clearInterval( removeWatermarkTimer );
-		}
-	
-	}, 50 );
-})();
 
 var bodiesHandsToLineChart = function( bodiesArray ){
 	var out = {};
@@ -146,18 +124,18 @@ var wordsToNodeChart = function( words ){
 
 var input = new Input( $('#output'), 100, true, true, true );
 input.start();
-
-setAccumulate();
+input.saver.setUpdateInterval( 25 );
 
 var queryer = new QueryMaker( $( '#results' ) );
  
 var updateResultInterval = 10000; //every 10 seconds
-pQ = '';
+
+previousQ = '';
 setInterval( function(){
 	var q = input.speech.getLastXStore( 3 );
-	if( q.length > 0  && pQ !== q ){
+	if( q.length > 0  && previousQ !== q ){
 		queryer.query( q );
-		pQ = q;
+		previousQ = q;
 	}
 }, updateResultInterval );
 
@@ -187,7 +165,6 @@ updateWordChart();
 
 
 input.saver.onSaveData = function( latest, all ){
-	
 	var allBodies = [];
 	for( var i = 0; i < all.length; i++ ){
 		var thisOne = all[ i ];
@@ -212,11 +189,8 @@ input.saver.onSaveData = function( latest, all ){
 
 	if( latest.bodies ){
 		var data;
-		if( ACCUMULATE ){
-			lineChart_hands.addData( bodiesHandsToLineChart( allBodies ) );
-		} else {
-			lineChart_hands.addData( bodiesHandsToLineChart( latest.bodies.data ) );
-		}
+		lineChart_hands.addData( bodiesHandsToLineChart( allBodies ) );
+
 
 		streamGraph_length.addData( bodiesHeightToStreamGraph( allBodies) );
 		donutChart_movement_not.addData( bodiesMotionToDonutChart( allBodies ) );
@@ -226,8 +200,3 @@ input.saver.onSaveData = function( latest, all ){
 		streamGraph_sphereSize.addData( handsSphereToStreamGraph( allHands ) );
 	}
 }
-
-accumulate_btn.addEventListener( 'click', function(){
-	ACCUMULATE = !ACCUMULATE;
-	setAccumulate();
-});

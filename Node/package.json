@@ -10,8 +10,9 @@
   "license": "MIT",
   "dependencies": {
     "connect": "^2.14.4",
-    "socket.io": "^0.9.16",
+    "leapjs": "^0.4.3",
     "node-osc": "^0.2.1",
-    "leapjs": "^0.4.3"
+    "oauth": "^0.9.12",
+    "socket.io": "^0.9.16"
   }
 }

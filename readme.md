@@ -8,6 +8,7 @@
 - Install node.js & npm [nodejs.org](http://nodejs.org/)
 - download code
 - cd into directory & run npm install
+- rename Node/config/twitter-example.js as Node/config/twitter.js and populate with twitter credentials.
 
 
 

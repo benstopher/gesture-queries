@@ -4,7 +4,10 @@ var io = require( 'socket.io' );
 var kinectOSC = require( './modules/Kinect.js' );
 var fs = require( 'fs' );
 var DATA = {};
-
+var Twitter = ( function(){
+	var t = require( './modules/Twitter.js' );
+	return (new t());
+})();
 var savePath = '';
 var dataSavePath = '';
 
@@ -46,6 +49,24 @@ kinect.onFrameUpdate = function( data ){
 		kinectSocket.emit( "kinect-frame", data );
 	}
 }
+
+socket.of( '/twitter' ).on('connection', function(socket) {	
+	socket.on( 'search', function( data ){
+		Twitter.search( data.query, function( result ){
+			socket.emit( 'result', result );
+		});
+	});
+	socket.on( 'search-location', function( data ){
+		Twitter.searchLocation( data.query, data.latitude, data.longitude, data.radius, function( result ){
+			socket.emit( 'result', result );
+		});
+	});
+	socket.on( 'user-timeline', function( data ){
+		Twitter.searchLocation( data.query, function( result ){
+			socket.emit( 'result', result );
+		});
+	});
+});
 
 socket.of( '/save-charts' ).on( 'connection', function( socket ){
 	socket.on( 'save-data', function( data ){
