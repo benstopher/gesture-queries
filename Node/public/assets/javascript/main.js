@@ -138,9 +138,6 @@ var wordsToNodeChart = function( words ){
 		if( i !== out.central ){
 			out.links.push( {source: i, target: out.central });
 		}
-		// for( var j = i; j < wordsArray.length; j++){
-		// 	out.links.push( { source: i, target: j } );
-		// }
 	}
 
 	return out;
@@ -174,9 +171,8 @@ var updateWordChart = function(){
 		forceNodeChart_words.reset();
 		wordChartAdditions = 0;
 	}
-	//var d = "this is a test sentence to test things with it is only intended for the purposes of testing and testing is what its good at";
+
 	var d = input.speech.getLastXStore( 25 );
-	//var d = input.speech.getNewStore();
 
 	d = wordsToNodeChart( d );
 	forceNodeChart_words.addData( d );
