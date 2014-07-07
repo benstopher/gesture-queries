@@ -23,7 +23,7 @@ StreamGraph.prototype = {
 		this.svg.append("path")
     		.attr("class", c )
     		.attr("d", this.area( [] ) )
-    		.style( "fill", function() { return that.colour( help.colours.length % that.numberLayers ); });
+    		.style( "fill", function() { return that.colour( help.piecolours.length % that.numberLayers ); });
 	},
 	init: function(){
 		var that = this;

@@ -19,6 +19,8 @@ WaveformRenderer.prototype = {
 		var that = this;
 		navigator.getUserMedia( {audio:true}, function( stream ){
 			that._onGotAudio( stream );
+		}, function( error ){
+			console.log( 'getUserMedia error:', error );
 		});
 	},
 	_onGotAudio: function( stream ){
