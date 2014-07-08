@@ -62,7 +62,6 @@ Twitter.prototype = {
 	},
 	userTimeline: function( who, callback ){
 		var that = this;
-		console.log( 'QUERY: ', 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + who );
 		this.oauth.get(
 			'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + who,
 			credentials.user.key,
