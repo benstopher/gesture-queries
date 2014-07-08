@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Skeleton Queries</title>
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+	<style type="text/css">
+		html,body{
+			overflow: hidden;
+		}
+		#graph-node-words{
+			width: 100%;
+			height: 100%;
+		}
+		.row{
+			position: absolute;
+			bottom: 0;
+			height: 300px;
+		}
+		#frame{
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="frame">
+		<span id="certain"></span>
+		<span id="maybe"></span>
+	</div>
+
+	<!-- page specific -->
+	<!-- none -->
+
+	<!-- libs -->
+	<script src="assets/javascript/libs/zepto.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="assets/javascript/libs/leap-0.4.3.js"></script>
+	<script src="assets/javascript/libs/d3.js"></script>
+	<script src="assets/javascript/libs/_o.js"></script>
+	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/libs/crypto-js-hmac-sha1.js"></script>
+	<script src="assets/javascript/libs/crypto-js-enc-base64.min.js"></script>
+	<script src="assets/javascript/libs/oauth-1.0a.js"></script>
+
+	<!-- custom -->
+	<script src="assets/javascript/modules/help.js"></script>
+	<script src="assets/javascript/modules/Timer.js"></script>
+	<script src="assets/javascript/modules/GetBodies.js"></script>
+	<script src="assets/javascript/modules/GetHands.js"></script>
+	<script src="assets/javascript/modules/GetSpeech.js"></script>
+	<script src="assets/javascript/modules/DataSaver.js"></script>
+	<script src="assets/javascript/modules/Input.js"></script>
+	<script src="assets/javascript/modules/d3/LineChart.js"></script>
+	<script src="assets/javascript/modules/d3/StreamGraph.js"></script>
+	<script src="assets/javascript/modules/d3/DonutChart.js"></script>
+	<script src="assets/javascript/modules/d3/ForceNodeChart.js"></script>
+	<script src="assets/javascript/modules/WaveformRenderer.js"></script>
+	<script src="assets/javascript/modules/SoundVsSilence.js"></script>
+	<script src="assets/javascript/modules/kimono/Kimono.js"></script>
+	<script src="assets/javascript/modules/social/Twitter.js"></script>
+	<script src="assets/javascript/modules/QueryMaker.js"></script>
+	<script src="assets/javascript/scratch_data_conversions.js"></script>
+
+
+	<script>
+		var speech = new GetSpeech();
+		
+		setInterval( function(){
+			var words = speech.getLastXStore( 25 );
+			console.log( "INTERIM:" + speech.interim_transcript, "FINAL: " + speech.transcript, "RECENT: " + words );
+		}, 1000 );
+
+		speech.start();
+
+	</script>
+</body>
+</html>
