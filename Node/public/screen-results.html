@@ -117,9 +117,9 @@
 		var lastQuery;
 		var q = new QueryMaker();
 		
-		this.socket = io.connect( 'http://localhost/query-destination' );
+		var socket = io.connect( 'http://localhost/query-destination' );
 
-		this.socket.on('query-data', function( data ){
+		socket.on('query-data', function( data ){
 			console.log( "DATA: ", data );
 			if( data.length > 0 ){
 				lastQuery = data;
@@ -150,12 +150,17 @@
 						$item.append( $header );
 						$item.append( $timestamp );
 						
-						if( results[i][j].image.src != undefined ){
-							var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
-							$item.append( $img );
-						} else {
-							$item.addClass( 'no-img' );
-							$item.append( '<div class="filler"></div>' );
+						try{
+							if( results[i][j].image.src != undefined ){
+								var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
+								$item.append( $img );
+							} else {
+								$item.addClass( 'no-img' );
+								$item.append( '<div class="filler"></div>' );
+							}
+						} catch( e ){
+							console.log( 'no image' );
+							console.log( e );
 						}
 						
 						eles.push( $item[0] );
