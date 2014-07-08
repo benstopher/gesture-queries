@@ -1,5 +1,6 @@
 var osc = require( 'node-osc' );
 var _o = require( './_o.utils.js' );
+var Timer = require( './Timer.js' );
 
 var Kinect = function( _port, _ip ){
 	this.oscPort = _port;
@@ -30,6 +31,7 @@ Kinect.prototype = {
 	},
 	onFrameUpdate: function( data ){ /* override me */ },
 	_onFrameUpdate: function( data ){
+		this.data = data;
 		if( typeof this.onFrameUpdate === 'function' )
 			this.onFrameUpdate( data );
 	},
@@ -38,6 +40,9 @@ Kinect.prototype = {
 	},
 	removeUser: function( id ){
 		this.users[ id ] = false;
+	},
+	getData: function(){
+		return this.data;
 	},
 	skeletonToMetrics: function( skeleton ){
 		var leftHand = new _o.vec( skeleton.leftHand.x, skeleton.leftHand.y, skeleton.leftHand.z );
@@ -77,7 +82,7 @@ Kinect.prototype = {
 		var messageObject = JSON.parse( msg );
 		var metrics = this.skeletonToMetrics( messageObject );
 		var data = {
-			timestamp: (new Date()).getTime(),
+			timestamp: Timer.getUnixTimestamp(),
 			id: user,
 			skeleton: messageObject,
 			metrics: metrics
