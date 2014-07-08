@@ -101,20 +101,32 @@
 		var $all = $('#results-all');
 		var $user = $('#results-user');
 		var twitter = new Twitter();
+
+		var wrapStatus = function( status ){
+			var $ele = $('<li>');
+			var $text = $('<p>');
+			$text.html( status.text );
+			$ele.append( $text );
+			$( status.entities.media ).each( function(){
+				if( this.type === 'photo' ){
+					var $img = $('<img>');
+					$img.attr( 'src', this.media_url );
+					$ele.append( $img );
+				}
+			});
+			return $ele;
+		};
+
 		twitter.onResult = function( result ){
-			console.log( result );			
-			$(result.data.statuses).each( function( i ){
-				var $ele = $('<li>');
-				var $text = $('<p>');
-				$text.html( this.text );
-				$ele.append( $text );
-				$(this.entities.media ).each( function(){
-					if( this.type === 'photo' ){
-						var $img = $('<img>');
-						$img.attr( 'src', this.media_url );
-						$ele.append( $img );
-					}
-				});
+			var statuses;
+			console.log( result );
+			if( typeof result.data.statuses !== 'undefined' ){
+				statuses = result.data.statuses;
+			} else {
+				statuses = result.data;
+			}
+			$( statuses ).each( function( i ){
+				var $ele = wrapStatus( this );
 				if( result.type === 'search' ){
 					$all.append( $ele );
 				}
@@ -126,8 +138,8 @@
 				}
 			});
 		};
-		twitter.search( 'graphic design');
-		twitter.searchLocation( 'graphic design', '51.494695', '-0.101772', '10mi' );
+		twitter.search( 'IntDesCom');
+		twitter.searchLocation( 'IntDesCom', '51.494695', '-0.101772', '5mi' );
 		twitter.userTimeline( 'benstopher' );
 	</script>
 </body>

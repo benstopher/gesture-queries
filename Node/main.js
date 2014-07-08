@@ -62,7 +62,7 @@ socket.of( '/twitter' ).on('connection', function(socket) {
 		});
 	});
 	socket.on( 'user-timeline', function( data ){
-		Twitter.searchLocation( data.query, function( result ){
+		Twitter.userTimeline( data.query, function( result ){
 			socket.emit( 'result', result );
 		});
 	});
