@@ -21,7 +21,7 @@ var processLeapData = function( data ){
 		if( frame.hands.length < 1 ){
 			return false;
 		}
-		var timestamp = (new Date()).getTime();
+		// var timestamp = (new Date()).getTime();
 		var data = {
 			timestamp: timestamp,
 			hands: []
@@ -35,8 +35,18 @@ var processLeapData = function( data ){
 	return parseFrame( data );
 };
 
+var processSpeechData = function( words ){
+	var timestamp = Timer.getUnixTimestamp();
+	var data = {
+		timestamp: timestamp,
+		words: words
+	};
+	return  data;
+}
+
 var Input = function( socket ){
 	var that = this;
+	this.socket = socket;
 	this.data = {
 		hands: null,
 		bodies: null,
@@ -53,7 +63,7 @@ Input.prototype = {
 		this.leap = new Leap.Controller({
 			enableGestures: true,
 			loopWhileDisconnected: false
-		});
+		});		
 
 		this.leap.connect();
 	},
@@ -64,6 +74,12 @@ Input.prototype = {
 		}
 		this.leap.on( 'frame', function( frame ){
 			that.data.hands = processLeapData( frame );
+		});
+		this.socket.of( '/speech-recognition' ).on('connection', function( socket ){
+			socket.on( 'data', function( data ){
+				that.data.words = processSpeechData( data );
+				console.log( that.data.words );
+			});
 		});
 	},
 	out: function(){

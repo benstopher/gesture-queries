@@ -2,7 +2,8 @@ var http = require( 'http' );
 var connect = require( 'connect' );
 
 var app = connect();
-app.use( connect.static( __dirname + '/public' ) );
+console.log( __dirname + '/../public' );
+app.use( connect.static( __dirname + '/../public' ) );
 
 var Server = http.createServer( app );
 Server.listen(8080);

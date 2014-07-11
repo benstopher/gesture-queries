@@ -27,7 +27,7 @@ GetSpeech.prototype = {
 		if( typeof this.onStart === 'function' )
 			this.onStart();
 	},
-	onResult: function(){ /* override me */ },
+	onResult: function( data ){ /* override me */ },
 	_onResult: function(){
 		this.interim_transcript = '';
 
@@ -40,7 +40,7 @@ GetSpeech.prototype = {
 	    }
 	    
 		if( typeof this.onResult === 'function' )
-			this.onResult();
+			this.onResult( this.transcript );
 	},
 	getAllStore: function(){
 		return this.transcript;
