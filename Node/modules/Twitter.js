@@ -27,7 +27,7 @@ Twitter.prototype = {
 	search: function( what, callback ){
 		var that = this;
 		this.oauth.get(
-			'https://api.twitter.com/1.1/search/tweets.json?count=100&q=' + encodeURIComponent( what ),
+			'https://api.twitter.com/1.1/search/tweets.json?count=20&q=' + encodeURIComponent( what ),
 			credentials.user.key,
 			credentials.user.secret,     
 			function(error, data, res){
