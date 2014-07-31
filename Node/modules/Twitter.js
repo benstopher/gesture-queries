@@ -14,27 +14,45 @@ var Twitter = function(){
 };
 
 Twitter.prototype = {
-	wrapResult: function( type, result ){
+	wrapResult: function( type, result, count ){
 		var wrapped = {
 			type: type,
 			data: {}
 		};
 		if( result ){
-			wrapped.data = JSON.parse(result);
+			var i = 0;
+			var data = JSON.parse(result);
+			var retweets_excluded = [];
+			//while( retweets_excluded.length < count && i < data.length ){
+				for( var i = 0; i < data.statuses.length; i++ ){
+					if( !data.statuses[i].retweeted_status ){
+						retweets_excluded.push( data.statuses[i] );
+					}
+					if( retweets_excluded >= count ){
+						break;
+					}
+				}
+			//}
+			data.statuses = retweets_excluded;
+			wrapped.data = data;
+			console.log( 'WRAPPED TWITTER: ');
+			console.log( wrapped );
+			console.log( 'ORIGINAL TWITTER: ');
+			console.log( data );
 		}
 		return wrapped;
 	},
 	search: function( what, callback ){
 		var that = this;
 		this.oauth.get(
-			'https://api.twitter.com/1.1/search/tweets.json?count=20&q=' + encodeURIComponent( what ),
+			'https://api.twitter.com/1.1/search/tweets.json?count=50&q=' + encodeURIComponent( what ),
 			credentials.user.key,
 			credentials.user.secret,     
 			function(error, data, res){
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search', data );
+				var result = that.wrapResult( 'search', data, 25 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
@@ -45,14 +63,14 @@ Twitter.prototype = {
 	searchLocation: function( what, lat, lon, radius, callback ){
 		var that = this;
 		this.oauth.get(
-			'https://api.twitter.com/1.1/search/tweets.json?count=100&q=' + encodeURIComponent( what ) + '&geocode=' + lat + ',' + lon + ',' + radius,
+			'https://api.twitter.com/1.1/search/tweets.json?count=50&q=' + encodeURIComponent( what ) + '&geocode=' + lat + ',' + lon + ',' + radius,
 			credentials.user.key,
 			credentials.user.secret,     
 			function(error, data, res){
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search-location', data );
+				var result = that.wrapResult( 'search-location', data, 25 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
@@ -70,7 +88,7 @@ Twitter.prototype = {
 				if(error){
 					console.error( "ERROR: ", error ); 
 				}
-				var result = that.wrapResult( 'user-timeline', data );
+				var result = that.wrapResult( 'user-timeline', data, 25 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );

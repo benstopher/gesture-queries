@@ -22,49 +22,79 @@
 				position: relative;
 
 			}
-			.masonry-item.no-img .filler{
-				background: #666666;
-				width: 232px;
-				height: 232px;
-			}
-				.masonry-item img{
-					width: 100%;
-					height: auto;
-					display: block;
-				}
-				.masonry-item hgroup{
-					position: absolute;
-					width: 100%;
-					top: 50%;
-					left: 0;
-					text-align: center;
-					line-height: 1.2em;
-					margin-top: -1.2em;
-					padding: 0 20px;
-					box-sizing: border-box;
-				}
-					.masonry-item hgroup h1{
-						font-size: 2em;
-						text-transform: uppercase;
-						font-weight: normal;
-					}
-					.masonry-item hgroup h2{
-						font-size: 0.7em;
-						font-weight: 200;
-					}
 
-					.masonry-item span{
-						position: absolute;
-						bottom: 20px;
-						display: block;
-						width: 100%;
-						text-align: center;
-						padding: 0 20px;
-						box-sizing: border-box;
-					}
-					.masonry-item span:before{
-						content: "@ ";
-					}
+		.result{
+
+		}
+
+		.result.no-img .filler{
+			background: #666666;
+			width: 314px;
+			height: 314px;
+		}
+			.result img{
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+
+		.result.result--twitter hgroup{
+			position: absolute;
+			width: 100%;
+			top: 0;
+			padding: 20px;
+			box-sizing: border-box;
+			background: rgba(0,0,0,0.4);
+		}	
+			.result.result--twitter.no-img hgroup{
+				background: transparent;
+			}
+			.result.result--twitter hgroup p{
+				margin: 0 0 1em 0;
+			}
+			.result.result--twitter .user:before{
+				content: '@';
+			}
+			.result.result--twitter .user:after{
+				content: ' / ';
+			}
+			.result.result--twitter .time:before{
+				content: 'at: ';
+			}
+
+		.result.result--kimono hgroup{
+			position: absolute;
+			width: 100%;
+			top: 50%;
+			left: 0;
+			text-align: center;
+			line-height: 1.2em;
+			margin-top: -1.2em;
+			padding: 0 20px;
+			box-sizing: border-box;
+		}
+			.result.result--kimono hgroup h1{
+				font-size: 2em;
+				text-transform: uppercase;
+				font-weight: normal;
+			}
+			.result.result--kimono hgroup h2{
+				font-size: 0.7em;
+				font-weight: 200;
+			}
+
+			.result.result--kimono span{
+				position: absolute;
+				bottom: 20px;
+				display: block;
+				width: 100%;
+				text-align: center;
+				padding: 0 20px;
+				box-sizing: border-box;
+			}
+			.result.result--kimono span:before{
+				content: "at: ";
+			}
 	</style>
 </head>
 <body>
@@ -115,15 +145,142 @@
 			itemSelector: '.masonry-item'
 		});
 		var lastQuery;
+		var twitter = new Twitter();
 		var q = new QueryMaker();
 		
 		var socket = io.connect( 'http://localhost/query-destination' );
 
+		var wrapTwitterStatus = function( status ){
+			var $ele = $('<li class="masonry-item result result--twitter"></li>');
+			var $header = $(  '<hgroup></hgroup>' );
+			//var $title = $( '<h1>' + '@' + status.user.screen_name + '</h1>' );
+			var $user = $( '<span class="user">' + status.user.screen_name + '</span>' );
+			var date = new Date( status.created_at.slice( 0, -11 ) );
+			var $timestamp = $('<span class="time">' + date.getTime() + '</span>');
+			var $text = $('<p>' + status.text + '</p>');
+
+			$header.append( $text );
+			$header.append( $user );
+			$header.append( $timestamp );
+
+			$ele.append( $header );
+			console.log( status );
+			var imgCount = 0;
+			try {
+				imgCount = status.entities.media.length;
+			} catch( e ){
+				console.log( 'no image in tweet' );
+				console.log( e );
+			}
+
+			if( imgCount > 0 ){
+				$( status.entities.media ).each( function(){
+					if( this.type === 'photo' ){
+						var $img = $('<img>');
+						$img.attr( 'src', this.media_url );
+						$img.attr( 'width', this.sizes.medium.w );
+						$img.attr( 'height', this.sizes.medium.h );
+						$ele.append( $img );
+					}
+				});
+			} else {
+				$ele.addClass( 'no-img' );
+				$ele.append( '<div class="filler"></div>' );
+			}
+			return $ele;
+		};
+		var wrapKimonoResult = function( result, term ){
+			var $ele = $('<li class="masonry-item result result--kimono"></li>');
+			var $header = $('<hgroup></hgroup>' );
+			var $title = $( '<h1>' + term + '</h1>' );							
+			var $timestamp = $('<span>' + timer.getTimestamp() + '</span>');
+			var elementCount = 0;
+			if( typeof result.title !== 'undefined' ){
+				if( typeof result.title === 'string' ){
+					if( result.title.length > 0 ){
+						elementCount++;
+					}
+				} else if( result.title.text.length > 0 ){
+					elementCount++;
+				}
+			}
+			if( typeof result.image !== 'undefined' ){
+				if( typeof result.image === 'string' ){
+					if( result.image.length > 0 ){
+						elementCount++;
+					}
+				} else if( result.image.src ){
+					elementCount++;
+				}
+			}
+			if( typeof result.content !== 'undefined' ){
+				if( typeof result.content === 'string' ){
+					if( result.content.length > 0 ){
+						elementCount++;
+					}
+				} else{
+					elementCount++;
+				}
+			}
+			if( elementCount > 0 ){
+				console.log( result );
+			} else {
+				return false;
+			}
+
+			$header.append( $title );
+
+			if( result.title !== undefined ){
+				if( typeof result.title === 'object' && result.title.text.length ){
+					var $subtitle = $( '<h2>' + result.title.text + '</h2>' );
+					$header.append( $subtitle );
+				} else if( typeof result.title === 'string' && result.title.length > 0 ){
+					var $subtitle = $( '<h2>' + result.title + '</h2>' );
+					$header.append( $subtitle );
+				} else {
+					console.log( 'result title is string' );
+				}
+				$ele.append( $header );
+				$ele.append( $timestamp );
+			}
+			
+			try{
+				if( result.image.src != undefined ){
+					var $img = $('<img src="' + result.image.src + '">');
+					$ele.append( $img );
+				} else {
+					$ele.addClass( 'no-img' );
+					$ele.append( '<div class="filler"></div>' );
+				}
+			} catch( e ){
+				console.log( 'no image' );
+				console.log( e );
+			}
+			return $ele;
+		};
+
+		var layoutTimeout;
+		var updateMasonry = function( eles ){
+			clearTimeout( layoutTimeout );
+			$('#masonry-container').prepend( eles );
+			msnry.prepended( eles );
+			layoutTimeout = setTimeout( function(){
+				msnry.layout();	
+			}, 100 );
+		};
+
+		var sendQueries = function( data ){
+			lastQuery = data;
+			q.query( data );
+			twitter.search( data );
+			//twitter.searchLocation( data , '51.494695', '-0.101772', '5mi' );
+			//twitter.userTimeline( 'benstopher' );
+		};
+
 		socket.on('query-data', function( data ){
 			console.log( "DATA: ", data );
 			if( data.length > 0 ){
-				lastQuery = data;
-				q.query( data );
+				sendQueries( data );
 			}
 		});
 
@@ -135,41 +292,32 @@
 				if( typeof results[i] !== 'undefined' ){
 					for( var j = 0; j < results[i].length; j++ ){
 						var termFromQuery = lastQuery.split(' ');
-						var termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
-						var $item = $('<li class="masonry-item"></li>');
-						var $header = $('<hgroup></hgroup>' );
-						console.log( "TITLE: " + termFromQuery );
-						var $title = $( '<h1>' + termFromQuery + '</h1>' );							
-						var $timestamp = $('<span>' + timer.getTimestamp() + '</span>')
-						
-						$header.append( $title );
-						if( results[ i ][ j ].title !== undefined ){	
-							var $subtitle = $( '<h2>' + results[ i ][ j ].title.text + '</h2>' );
-							$header.append( $subtitle );
+							termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+						var $ele = wrapKimonoResult( results[i][j], termFromQuery );
+						if( $ele ){
+							eles.push( $ele[0] );
 						}
-						$item.append( $header );
-						$item.append( $timestamp );
-						
-						try{
-							if( results[i][j].image.src != undefined ){
-								var $img = $('<img src="' + results[ i ][ j ].image.src + '">');
-								$item.append( $img );
-							} else {
-								$item.addClass( 'no-img' );
-								$item.append( '<div class="filler"></div>' );
-							}
-						} catch( e ){
-							console.log( 'no image' );
-							console.log( e );
-						}
-						
-						eles.push( $item[0] );
 					}		
 				}
 			}
-			$('#masonry-container').prepend( eles );
-			msnry.prepended( eles );
-		}
+			updateMasonry( eles );
+		};
+
+		twitter.onResult = function( result ){
+			var statuses;
+			var eles = [];
+			if( typeof result.data.statuses !== 'undefined' ){
+				statuses = result.data.statuses;
+			} else {
+				statuses = result.data;
+			}
+			$( statuses ).each( function( i ){
+				var $ele = wrapTwitterStatus( this );
+				eles.push( $ele[0] );
+			});
+			updateMasonry( eles );
+		};
+
 	</script>
 </body>
 </html>

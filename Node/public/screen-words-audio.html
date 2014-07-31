@@ -110,6 +110,7 @@
 		var sendNewQuery = function(){
 			var emit = input.speech.getLastXStore( 2 );
 			if( new String(emit).valueOf() !== new String(lastEmitted).valueOf() ){
+				console.log( "Send to query: " + emit );
 				lastEmitted = emit;
 				socket.emit("data", emit );
 			}
