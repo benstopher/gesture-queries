@@ -10,6 +10,7 @@ var QueryMaker = function(){
 		new Kimono( "5sfcl31k", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //booooooom
 		new Kimono( "3886gpy0", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //brainpickings
 		new Kimono( "5jh18v22", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //MOMA design and violence
+		new Kimono( "86n063ww", "dcadb593109c905afe255fd53a5b7eb8", "s" ), //inverted audio
 	];
 	this.results = [];
 	this.results.length = this.queries.length;
