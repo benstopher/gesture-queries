@@ -170,7 +170,7 @@
 		var lastQuery;
 		var twitter = new Twitter();
 		var q = new QueryMaker();
-		
+		var resultToQueryModifierPool = [];
 		var socket = io.connect( 'http://localhost/query-destination' );
 
 		navigator.geolocation.getCurrentPosition( function( position ){
@@ -181,6 +181,9 @@
 		});
 
 		var pickWordFromText = function( text ){
+			if( typeof text !== 'string' ){ //bail
+				return false;
+			}
 			text = S(text).stripPunctuation().collapseWhitespace().s;
 			text = text.split( ' ' );
 			return chance.pick( text );
@@ -341,12 +344,17 @@
 
 		var sendQueries = function( data ){
 			lastQuery = data;
-			q.query( data.text );
-			twitter.search( data.text );			
+			var queryText = data.text;
+			if( resultToQueryModifierPool.length > 0 && chance.bool() ){
+				queryText += ' ' + chance.pick( resultToQueryModifierPool );
+			}
+			console.log( "QUERY: " + queryText );
+			q.query( queryText );
+			twitter.search( queryText );			
 			if( userLocation.fromAPI ){
 				var distanceToQuery = armSpreadToDistance( data.armSpread );
 				console.log( 'Calc-ed dist: ', distanceToQuery );
-				twitter.searchLocation( data.text, userLocation.latitude, userLocation.longitude, distanceToQuery );
+				twitter.searchLocation( queryText, userLocation.latitude, userLocation.longitude, distanceToQuery );
 			}
 			//twitter.userTimeline( 'benstopher' );
 		};
@@ -367,7 +375,10 @@
 					for( var j = 0; j < results[i].length; j++ ){
 						var termFromQuery = lastQuery.split(' ');
 							termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
-
+						var word = pickWordFromText( result.content.text );
+						if( word ){
+							resultToQueryModifierPool.push( word );
+						}
 						var $ele = wrapKimonoResult( results[i][j], termFromQuery );
 						if( $ele ){
 							eles.push( $ele[0] );
@@ -387,6 +398,10 @@
 				statuses = result.data;
 			}
 			$( statuses ).each( function( i ){
+				var word = pickWordFromText( this.text );
+				if( word ){
+					resultToQueryModifierPool.push( word );
+				}
 				var $ele = wrapTwitterStatus( this );
 				if( $ele ){
 					eles.push( $ele[0] );
