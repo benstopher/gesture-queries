@@ -130,6 +130,8 @@
 	<script src="assets/javascript/libs/d3.js"></script>
 	<script src="assets/javascript/libs/_o.js"></script>
 	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/libs/chance.js"></script>
+	<script src="assets/javascript/libs/string.js"></script>
 	<script src="assets/javascript/libs/crypto-js-hmac-sha1.js"></script>
 	<script src="assets/javascript/libs/crypto-js-enc-base64.min.js"></script>
 	<script src="assets/javascript/libs/oauth-1.0a.js"></script>
@@ -154,6 +156,11 @@
 	<script src="assets/javascript/scratch_data_conversions.js"></script>
 
 	<script>
+		var userLocation = {
+			fromAPI: false,
+			latitude: 0,
+			longitude: 0
+		};
 		var timer = new Timer();
 		var msnry = new Masonry( '#masonry-container', {
 			columnWidth: 334,
@@ -165,6 +172,19 @@
 		var q = new QueryMaker();
 		
 		var socket = io.connect( 'http://localhost/query-destination' );
+
+		navigator.geolocation.getCurrentPosition( function( position ){
+			userLocation.fromAPI = true;
+			userLocation.latitude = position.coords.latitude;
+			userLocation.longitude = position.coords.longitude;
+			console.log( "Got Location. Lat: " + userLocation.latitude + ' / Lon: ' + userLocation.longitude );
+		});
+
+		var pickWordFromText = function( text ){
+			text = S(text).stripPunctuation().collapseWhitespace().s;
+			text = text.split( ' ' );
+			return chance.pick( text );
+		}
 
 		var wrapTwitterStatus = function( status ){
 			var $ele = $('<li class="masonry-item result result--twitter"></li>');
@@ -207,8 +227,8 @@
 		};
 		var wrapKimonoResult = function( result, term ){
 			var $ele = $('<li class="masonry-item result result--kimono"></li>');
-			var $header = $('<hgroup></hgroup>' );
-			var $title = $( '<h1>' + term + '</h1>' );							
+			var $header = $('<hgroup></hgroup>' );			
+			var $title = $( '<h1>' + term + '</h1>' );			
 			var $timestamp = $('<span>' + timer.getTimestamp() + '</span>');
 			var elementCount = 0;
 			// test that there is actually some content:
@@ -233,9 +253,11 @@
 			if( typeof result.content !== 'undefined' ){
 				if( typeof result.content === 'string' ){
 					if( result.content.length > 0 ){
+						$title.text( pickWordFromText( result.content ) );
 						elementCount++;
 					}
 				} else{
+					$title.text( pickWordFromText( result.content.text ) );
 					elementCount++;
 				}
 			}
@@ -303,30 +325,29 @@
 					}, pos * 1000 );	
 				})( i );
 			}
-			// $( eles ).each( function(){
-			// 	$(this).addClass('hidden');
-			// });
+		};
 
-			// layoutTimeout = setTimeout( function(){
-			// 	$('#masonry-container').prepend( eles );
-			// 	msnry.prepended( eles );
-			// 	msnry.layout();
-			// 	for( var i = eles.length; i >= 0; i-- ){
-			// 		( function( $this, time ){
-			// 			setTimeout( function(){
-			// 				$this.removeClass( 'hidden' );
-			// 			}, time );	
-			// 		})( $(eles[i]), (eles.length - i) * 100 );
-			// 	}
-			// }, 500 );
-
+		var armSpreadToDistance = function( spread ){
+			var lowThresh = 0.05;
+			var highThresh = 0.6;
+			var result = '5mi';
+			if( spread > lowThresh && spread <= highThresh ){
+				result = '100mi';
+			} else if( spread > highThresh ){
+				result = '1000mi';
+			}
+			return result;
 		};
 
 		var sendQueries = function( data ){
 			lastQuery = data;
-			q.query( data );
-			twitter.search( data );
-			//twitter.searchLocation( data , '51.494695', '-0.101772', '5mi' );
+			q.query( data.text );
+			twitter.search( data.text );			
+			if( userLocation.fromAPI ){
+				var distanceToQuery = armSpreadToDistance( data.armSpread );
+				console.log( 'Calc-ed dist: ', distanceToQuery );
+				twitter.searchLocation( data.text, userLocation.latitude, userLocation.longitude, distanceToQuery );
+			}
 			//twitter.userTimeline( 'benstopher' );
 		};
 
@@ -346,6 +367,7 @@
 					for( var j = 0; j < results[i].length; j++ ){
 						var termFromQuery = lastQuery.split(' ');
 							termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+
 						var $ele = wrapKimonoResult( results[i][j], termFromQuery );
 						if( $ele ){
 							eles.push( $ele[0] );
