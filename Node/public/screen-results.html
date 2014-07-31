@@ -6,8 +6,8 @@
 	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
 	<style type="text/css">
 		#frame{
-			width: 1024px;
-			padding: 20px 0 20px 20px;
+			width: 64em;
+			padding: 1.25em 0 1.25em 1.25em;
 			overflow-x: hidden;
 		}
 			#masonry-container{
@@ -17,10 +17,15 @@
 				list-style-type: none;
 			}
 			.masonry-item{
-				width: 314px;
-				margin-bottom: 20px;
+				width: 19.62em;
+				margin-bottom: 1.25em;
 				position: relative;
-
+				opacity: 1;
+				-webkit-transition: opacity 0.3s ease-in-out, top 0.1s linear, left 0.1s linear, right 0.1s linear, bottom 0.1s linear;
+			}
+			.masonry-item.hidden{
+				opacity: 0;
+				-webkit-transition: opacity 0s linear;
 			}
 
 		.result{
@@ -29,8 +34,8 @@
 
 		.result.no-img .filler{
 			background: #666666;
-			width: 314px;
-			height: 314px;
+			width: 100%;
+			height: 19.62em;
 		}
 			.result img{
 				width: 100%;
@@ -42,10 +47,20 @@
 			position: absolute;
 			width: 100%;
 			top: 0;
-			padding: 20px;
+			padding: 1.25em;
 			box-sizing: border-box;
 			background: rgba(0,0,0,0.4);
 		}	
+			.result.result--twitter.no-img hgroup{
+				position: relative;
+				z-index: 1;
+			}
+			.result.result--twitter.no-img .filler{
+				height: 100%;
+				position: absolute;
+				top: 0;
+				z-index: 0;
+			}
 			.result.result--twitter.no-img hgroup{
 				background: transparent;
 			}
@@ -142,7 +157,8 @@
 		var timer = new Timer();
 		var msnry = new Masonry( '#masonry-container', {
 			columnWidth: 334,
-			itemSelector: '.masonry-item'
+			itemSelector: '.masonry-item',
+			transitionDuration: 0
 		});
 		var lastQuery;
 		var twitter = new Twitter();
@@ -195,6 +211,7 @@
 			var $title = $( '<h1>' + term + '</h1>' );							
 			var $timestamp = $('<span>' + timer.getTimestamp() + '</span>');
 			var elementCount = 0;
+			// test that there is actually some content:
 			if( typeof result.title !== 'undefined' ){
 				if( typeof result.title === 'string' ){
 					if( result.title.length > 0 ){
@@ -222,9 +239,11 @@
 					elementCount++;
 				}
 			}
+			//if there's no content, we return false
 			if( elementCount > 0 ){
 				console.log( result );
 			} else {
+				console.warn( 'Kimono returned empty result' );
 				return false;
 			}
 
@@ -260,13 +279,47 @@
 		};
 
 		var layoutTimeout;
+		var allMasonryItems = [];
+		var addMasonryItem = function( ele ){
+			allMasonryItems.push( ele );
+			$( ele ).addClass( 'hidden' );
+			$('#masonry-container').prepend( ele );
+			setTimeout( function(){
+				msnry.prepended( ele );
+				// msnry.layoutItems(  msnry.getItemElements(), true );
+				// msnry.layout();
+				setTimeout( function(){
+					$( ele ).removeClass( 'hidden' );
+				}, 500 );
+			}, 500 );
+		}
+
 		var updateMasonry = function( eles ){
 			clearTimeout( layoutTimeout );
-			$('#masonry-container').prepend( eles );
-			msnry.prepended( eles );
-			layoutTimeout = setTimeout( function(){
-				msnry.layout();	
-			}, 100 );
+			for( var i = eles.length; i >= 0; i-- ){
+				( function( pos ){
+					setTimeout( function(){
+						addMasonryItem( eles[pos] );
+					}, pos * 1000 );	
+				})( i );
+			}
+			// $( eles ).each( function(){
+			// 	$(this).addClass('hidden');
+			// });
+
+			// layoutTimeout = setTimeout( function(){
+			// 	$('#masonry-container').prepend( eles );
+			// 	msnry.prepended( eles );
+			// 	msnry.layout();
+			// 	for( var i = eles.length; i >= 0; i-- ){
+			// 		( function( $this, time ){
+			// 			setTimeout( function(){
+			// 				$this.removeClass( 'hidden' );
+			// 			}, time );	
+			// 		})( $(eles[i]), (eles.length - i) * 100 );
+			// 	}
+			// }, 500 );
+
 		};
 
 		var sendQueries = function( data ){
@@ -313,7 +366,9 @@
 			}
 			$( statuses ).each( function( i ){
 				var $ele = wrapTwitterStatus( this );
-				eles.push( $ele[0] );
+				if( $ele ){
+					eles.push( $ele[0] );
+				}
 			});
 			updateMasonry( eles );
 		};
