@@ -303,10 +303,22 @@
 			return $ele;
 		};
 
-		var layoutTimeout;
 		var allMasonryItems = [];
+		var layoutTimer;
+		var layoutLoop = function(){
+			clearTimeout( layoutTimer );
+			var addHowMany = Math.floor( _o.randomRange( 1, 5 ) );
+			for( var i = 0; i < addHowMany; i++ ){
+				if( allMasonryItems.length > 0 ){
+					addMasonryItem( allMasonryItems.pop() );
+				}
+			}
+			if( allMasonryItems.length > 0 ){
+				layoutTimer = setTimeout( layoutLoop, 1500 );
+			}
+		};
+
 		var addMasonryItem = function( ele ){
-			allMasonryItems.push( ele );
 			$( ele ).addClass( 'hidden' );
 			$('#masonry-container').prepend( ele );
 			setTimeout( function(){
@@ -320,14 +332,15 @@
 		}
 
 		var updateMasonry = function( eles ){
-			clearTimeout( layoutTimeout );
 			for( var i = eles.length; i >= 0; i-- ){
-				( function( pos ){
-					setTimeout( function(){
-						addMasonryItem( eles[pos] );
-					}, pos * 1000 );	
-				})( i );
+				// ( function( pos ){
+				// 	setTimeout( function(){
+				// 		addMasonryItem( eles[pos] );
+				// 	}, pos * 1000 );	
+				// })( i );
+				allMasonryItems.push( eles[i] );
 			}
+			layoutLoop();
 		};
 
 		var armSpreadToDistance = function( spread ){
@@ -343,11 +356,11 @@
 		};
 
 		var sendQueries = function( data ){
-			lastQuery = data;
 			var queryText = data.text;
 			if( resultToQueryModifierPool.length > 0 && chance.bool() ){
 				queryText += ' ' + chance.pick( resultToQueryModifierPool );
 			}
+			lastQuery = queryText;
 			console.log( "QUERY: " + queryText );
 			q.query( queryText );
 			twitter.search( queryText );			
@@ -398,6 +411,10 @@
 				statuses = result.data;
 			}
 			$( statuses ).each( function( i ){
+				for( var j = 0; j < this.entities.urls.length; j++ ){
+					console.log( 'replace URL' );
+					this.text = this.text.replace( this.entities.urls[j].url, ' ' );
+				}
 				var word = pickWordFromText( this.text );
 				if( word ){
 					resultToQueryModifierPool.push( word );
