@@ -108,15 +108,20 @@
 		var lastEmitted = '';
 		
 		var sendNewQuery = function(){
-			var emit = input.speech.getLastXStore( 2 );
+			var emit = input.speech.getLastXStore( 3 );
 			if( new String(emit).valueOf() !== new String(lastEmitted).valueOf() ){
 				console.log( "Send to query: " + emit );
 				lastEmitted = emit;
 				socket.emit("data", emit );
+				setTimeout( function(){
+					sendNewQuery();
+				}, 20000 );
+			} else {
+				setTimeout( function(){
+					sendNewQuery();
+				}, 2000 );
 			}
-			setTimeout( function(){
-				sendNewQuery();
-			}, 20000 );
+			
 		}
 
 		input.start();

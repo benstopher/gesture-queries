@@ -356,7 +356,7 @@
 		};
 
 		var sendQueries = function( data ){
-			var queryText = data.text;
+			var queryText = chance.pick( data.text.split( ' ' ) );
 			if( resultToQueryModifierPool.length > 0 && chance.bool() ){
 				queryText += ' ' + chance.pick( resultToQueryModifierPool );
 			}
@@ -374,7 +374,7 @@
 
 		socket.on('query-data', function( data ){
 			console.log( "DATA: ", data );
-			if( data.length > 0 ){
+			if( data.text.length > 0 ){
 				sendQueries( data );
 			}
 		});
