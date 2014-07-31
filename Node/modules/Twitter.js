@@ -46,7 +46,7 @@ Twitter.prototype = {
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search', data, 20 );
+				var result = that.wrapResult( 'search', data, 10 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
