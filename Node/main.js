@@ -113,8 +113,15 @@ socket.of('/query-destination' ).on('connection', function( socket ){
 
 socket.of( '/query-source' ).on('connection', function( socket ) {	
 	socket.on( 'data', function( data ){
+
 		if( typeof queryDestSocket !== 'undefined' ){
-			queryDestSocket.emit( "query-data", data );
+			// send query information to the results page,
+			// also send kinect arm-spread information for 
+			// twitter location search
+			queryDestSocket.emit( "query-data", {
+				text: data,
+				armSpread: kinect.latestFrame.metrics.armSpan
+			});
 		}
 	});	
 });

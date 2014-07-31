@@ -8,6 +8,12 @@ var Kinect = function( _port, _ip ){
 	this.users = {};
 	this.listen();
 	this.pSkeleton = false;
+	this.latestFrame = {
+		timestamp: 0,
+		id: 0,
+		skeleton: {},
+		metrics: {}
+	};
 };
 
 Kinect.prototype = {
@@ -23,6 +29,7 @@ Kinect.prototype = {
 			}
 			if( msg[0].indexOf( "/user/" ) !== -1 ){
 				var data = that.parseDataFromOSC( msg[0], msg[1] );
+				this.latestFrame = data;
 				// console.log( 'decode /user/ message ' +  data.id );
 				that._onFrameUpdate( data );
 			}
@@ -60,7 +67,7 @@ Kinect.prototype = {
 		}
 
 		//console.log( "MOTION: ", motion );
-
+		console.log(rightHand.distanceTo( leftHand ));
 		var metrics = {
 			armSpan: rightHand.distanceTo( leftHand ),
 			height: bodyBottom - bodyTop,
