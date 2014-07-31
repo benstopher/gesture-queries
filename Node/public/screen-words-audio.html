@@ -49,6 +49,8 @@
 	<script src="assets/javascript/libs/d3.js"></script>
 	<script src="assets/javascript/libs/_o.js"></script>
 	<script src="assets/javascript/libs/_o.render.js"></script>
+	<script src="assets/javascript/libs/chance.js"></script>
+	<script src="assets/javascript/libs/string.js"></script>
 	<script src="assets/javascript/libs/crypto-js-hmac-sha1.js"></script>
 	<script src="assets/javascript/libs/crypto-js-enc-base64.min.js"></script>
 	<script src="assets/javascript/libs/oauth-1.0a.js"></script>
@@ -81,13 +83,12 @@
 		var waveform = new WaveformRenderer( $('#graph-line-audio'), $('#graph-line-audio').width(), window.innerHeight * 0.2 );
 		var wordChartAdditions = 0;
 		var lastNodeAdditions = '';
+		
 		var updateWordChart = function(){
-
 			if( wordChartAdditions > 10 ){
 				forceNodeChart_words.reset();
 				wordChartAdditions = 0;
 			}
-			//var d = "this is a test sentence to test things with it is only intended for the purposes of testing and testing is what its good at";
 			var d = input.speech.getLastXStore( 25 );
 			if( new String( d ).valueOf() !== new String( lastNodeAdditions ).valueOf() ){
 				lastNodeAdditions = d;
@@ -99,7 +100,6 @@
 					saveSocket.emit("save-data", $('#graph-node-words').html() );
 				}
 			}
-
 			setTimeout( function(){
 				updateWordChart();
 			}, 10000 );
