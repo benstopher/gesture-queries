@@ -23,22 +23,16 @@ Twitter.prototype = {
 			var i = 0;
 			var data = JSON.parse(result);
 			var retweets_excluded = [];
-			//while( retweets_excluded.length < count && i < data.length ){
-				for( var i = 0; i < data.statuses.length; i++ ){
-					if( !data.statuses[i].retweeted_status ){
-						retweets_excluded.push( data.statuses[i] );
-					}
-					if( retweets_excluded >= count ){
-						break;
-					}
+			for( var i = 0; i < data.statuses.length; i++ ){
+				if( !data.statuses[i].retweeted_status ){
+					retweets_excluded.push( data.statuses[i] );
 				}
-			//}
+				if( retweets_excluded >= count ){
+					break;
+				}
+			}
 			data.statuses = retweets_excluded;
 			wrapped.data = data;
-			console.log( 'WRAPPED TWITTER: ');
-			console.log( wrapped );
-			console.log( 'ORIGINAL TWITTER: ');
-			console.log( data );
 		}
 		return wrapped;
 	},
@@ -52,7 +46,7 @@ Twitter.prototype = {
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search', data, 25 );
+				var result = that.wrapResult( 'search', data, 20 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
@@ -70,7 +64,7 @@ Twitter.prototype = {
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search-location', data, 25 );
+				var result = that.wrapResult( 'search-location', data, 20 );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
