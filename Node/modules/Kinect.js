@@ -67,7 +67,6 @@ Kinect.prototype = {
 		}
 
 		//console.log( "MOTION: ", motion );
-		console.log(rightHand.distanceTo( leftHand ));
 		var metrics = {
 			armSpan: rightHand.distanceTo( leftHand ),
 			height: bodyBottom - bodyTop,
