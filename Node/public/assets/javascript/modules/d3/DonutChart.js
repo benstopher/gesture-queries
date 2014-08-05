@@ -8,7 +8,7 @@ var DonutChart = function( _ele, _w, _h, _clr ){
 	this.numberLayers = 1;
 	this.perLayer = 100;
 	this.clr = _clr || help.piecolours[0];
-
+	this.data = [];
 	this.init();
 };
 
@@ -50,6 +50,7 @@ DonutChart.prototype = {
 	addData: function( data ){
 		var that = this;
 		this.colour.domain( [ 0, data.length - 1] );
+		this.data = this.pie( data );
 
 		var slice = this.svg.select(".slices").selectAll("path.slice")
 			.data( this.pie( data ) );
@@ -72,6 +73,8 @@ DonutChart.prototype = {
 
 		slice.exit()
 			.remove();
-
+	},
+	getData: function(){
+		return this.data;
 	}
 };

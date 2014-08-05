@@ -90,5 +90,7 @@ StreamGraph.prototype = {
 	  //           .attr("d", this.line ); // apply the new data values
 	    }
 	},
-
+	getData: function(){
+		return this.data;
+	}
 };

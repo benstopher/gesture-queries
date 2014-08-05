@@ -6,6 +6,7 @@ var LineChart = function( _ele, _w, _h ){
 	this.height = _h - this.margin.top - this.margin.bottom;
 	this.adaptableY = true;
 	this.interpolation = true;
+	this.data = [];
 	this.init();
 };
 
@@ -106,5 +107,8 @@ LineChart.prototype = {
 		    }
 	    }
 	},
+	getData: function(){
+		return this.data;
+	}
 
 };

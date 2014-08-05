@@ -8,6 +8,7 @@ var ForceNodeChart = function( _ele, _w, _h ){
 	this.height = _h - this.margin.top - this.margin.bottom;
 	this.adaptableY = true;
 	this.interpolation = true;
+	this.data = [];
 	this.init();
 };
 
@@ -101,6 +102,8 @@ ForceNodeChart.prototype = {
 			data.links[i].target = data.links[i].target + this.nodes.length;
 		}
 
+		this.data = data;
+
 		this.nodes = this.nodes.concat( data.nodes );
 		this.links = this.links.concat( data.links );
 
@@ -157,5 +160,7 @@ ForceNodeChart.prototype = {
 		this.start();
 
 	},
-
+	getData: function(){
+		return this.ele.data();
+	}
 };
