@@ -56,6 +56,8 @@ SoundVsSilence.prototype = {
 		}
 
 		this.chart.addData( this.data );
-
+	},
+	getData: function(){
+		return this.chart.getData();
 	}
 };
