@@ -4,7 +4,6 @@ var Kimono = function( apiURL, apiKey, queryParam ){
 	this.queryParam = queryParam;
 	this.apiKey = apiKey;
 	this.kimonoURL = "http://www.kimonolabs.com/api/"
-
 	this.queryURL = this.constructURL();
 
 }
@@ -17,7 +16,7 @@ Kimono.prototype = {
 		var that = this;
 		return this.kimonoURL + this.apiURL + "?apikey=" + this.apiKey + "&" + this.queryParam + "=";
 	},
-	query: function( value, callback ){
+	query: function( value, success, failure ){
 		var that = this;
 		var valueArray = value.split( " " );
 		value = "";
@@ -35,11 +34,16 @@ Kimono.prototype = {
 		    "dataType":"jsonp",
 		    "success": function( data ){
 		    	data._original_query = value;
-		    	if( typeof callback === 'function' ){
-		    		callback( data );
+		    	if( typeof success === 'function' ){
+		    		success( data );
 		    	}
 
 		    	that._onResult( data );
+		    },
+		    error: function( xhr, type ){
+		    	if( typeof failure === 'function' ){
+		    		failure( type );
+		    	}
 		    }
 		});
 

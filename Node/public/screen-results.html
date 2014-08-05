@@ -169,7 +169,7 @@
 		});
 		var lastQuery;
 		var twitter = new Twitter();
-		var q = new QueryMaker();
+		var queryMaker = new QueryMaker();
 		var resultToQueryModifierPool = [];
 		var socket = io.connect( 'http://localhost/query-destination' );
 
@@ -203,13 +203,13 @@
 			$header.append( $timestamp );
 
 			$ele.append( $header );
-			console.log( status );
+			//console.log( status );
 			var imgCount = 0;
 			try {
 				imgCount = status.entities.media.length;
 			} catch( e ){
-				console.log( 'no image in tweet' );
-				console.log( e );
+				//console.log( 'no image in tweet' );
+				//console.log( e );
 			}
 
 			if( imgCount > 0 ){
@@ -362,7 +362,7 @@
 			}
 			lastQuery = queryText;
 			console.log( "QUERY: " + queryText );
-			q.query( queryText );
+			queryMaker.query( queryText );
 			twitter.search( queryText );			
 			if( userLocation.fromAPI ){
 				var distanceToQuery = armSpreadToDistance( data.armSpread );
@@ -379,28 +379,53 @@
 			}
 		});
 
-		q.onResult = function( results ){
-			console.log( "RESULTS: ", results );
-			console.log( "LAST QUERY: ", lastQuery );
-			var eles = [];
-			for( var i = 0; i < results.length; i++ ){
-				if( typeof results[i] !== 'undefined' ){
-					for( var j = 0; j < results[i].length; j++ ){
-						var termFromQuery = lastQuery.split(' ');
-							termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
-						var word = pickWordFromText( result.content.text );
-						if( word ){
-							resultToQueryModifierPool.push( word );
-						}
-						var $ele = wrapKimonoResult( results[i][j], termFromQuery );
-						if( $ele ){
-							eles.push( $ele[0] );
-						}
-					}		
+		// queryMaker.onResult = function( results ){
+		// 	console.log( "RESULTS: ", results );
+		// 	console.log( "LAST QUERY: ", lastQuery );
+		// 	var eles = [];
+		// 	for( var i = 0; i < results.length; i++ ){
+		// 		if( typeof results[i] !== 'undefined' ){
+		// 			for( var j = 0; j < results[i].length; j++ ){
+		// 				var termFromQuery = lastQuery.split(' ');
+		// 					termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+		// 				var word = pickWordFromText( results[i][j].content.text || results[i][j].content );
+		// 				if( word ){
+		// 					resultToQueryModifierPool.push( word );
+		// 				}
+		// 				var $ele = wrapKimonoResult( results[i][j], termFromQuery );
+						
+		// 				if( $ele ){
+		// 					eles.push( $ele[0] );
+		// 				}
+		// 			}		
+		// 		}
+		// 	}
+		// 	console.warn( "ADD KIMONO TO MASONRY: ");
+		// 	console.log( eles );
+		// 	updateMasonry( eles );
+		// };
+		queryMaker.onEachResult = function( results ){
+			console.log( 'A kimono Result: ', results );
+			if( typeof results !== 'undefined' ){
+				console.log( 'looping through results: ');
+				var eles = [];
+				for( var i = 0; i < results.length; i++ ){
+					console.log( 'Result ' + i + ': ', results[i] );
+					var termFromQuery = lastQuery.split(' ');
+						termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
+					var word = pickWordFromText( results[i].content.text || results[i].content );
+					if( word ){
+						resultToQueryModifierPool.push( word );
+					}
+					var $ele = wrapKimonoResult( results[i], termFromQuery );
+					
+					if( $ele ){
+						eles.push( $ele[0] );
+					}
 				}
+				updateMasonry( eles );
 			}
-			updateMasonry( eles );
-		};
+		}
 
 		twitter.onResult = function( result ){
 			var statuses;
@@ -412,7 +437,7 @@
 			}
 			$( statuses ).each( function( i ){
 				for( var j = 0; j < this.entities.urls.length; j++ ){
-					console.log( 'replace URL' );
+					//console.log( 'replace URL' );
 					this.text = this.text.replace( this.entities.urls[j].url, ' ' );
 				}
 				var word = pickWordFromText( this.text );

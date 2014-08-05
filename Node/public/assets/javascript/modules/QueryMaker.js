@@ -1,3 +1,10 @@
+var parseButDoesItfloat = function( data ){
+	for( var i = 0; i < data.length; i++ ){
+		data[i].image.src = data[i].image.original;
+	}
+	return data;
+};
+
 var QueryMaker = function(){
 	this.queries = [
 		new Kimono( "68fnsfx2", "dcadb593109c905afe255fd53a5b7eb8", "q" ), //bldgblog.blogspot.com
@@ -20,17 +27,38 @@ QueryMaker.prototype = {
 	query: function( value ){
 		var that = this;
 		var resultCount = 0;
+		// clear previous results
+		this.results = [];
 
 		for( var i in this.queries ){
 			(function( i ){
-				that.queries[i].query( value, function( data, value ){
-					resultCount++;
-					that.results[ i ] = data.results.data;
-					if( resultCount === that.queries.length - 1 ){
-						that._onResult();
+				that.queries[i].query( 
+					value, 
+					function( data, value ){
+						if( that.queries[i].apiURL === '52g6adto' ){
+							//is 'but does it float' - need to wrangle some data
+							data.results.data = parseButDoesItfloat( data.results.data );
+						}
+						resultCount++;
+						that.results.push( data.results.data );
+						that._onEachResult( data.results.data );
+						if( resultCount === that.queries.length - 1 ){
+							that._onResult();
+						}
+					}, function(){
+						resultCount++;
+						if( resultCount === that.queries.length - 1 ){
+							that._onResult();
+						}
 					}
-				});
+				);
 			})( i );
+		}
+	},
+	onEachResult: function( data ){ /* override */ },
+	_onEachResult: function( data ){
+		if( typeof this.onEachResult === 'function' ){
+			this.onEachResult( data );
 		}
 	},
 	onResult: function( data ){ /* override */ },
