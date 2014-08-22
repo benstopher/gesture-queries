@@ -33,7 +33,7 @@ new Kimono( "API_NUM", "YOUR_API_KEY", "PATH_TO_QUERY" )
 
 There is a script (```ffmpeg/split-video-to-frames.sh```) which uses ffmpeg to split a video into frames at a specified interval. This is to allow the recording of a session and its output as images.
 
-Usage is as follows
+Usage is as follows:
 
 ```sh ffmpeg/split-video-to-frames.sh path-to-input-file.mov 5 00:00:17 output-file-prefix```
 
