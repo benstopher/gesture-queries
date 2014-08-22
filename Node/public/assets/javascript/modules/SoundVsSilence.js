@@ -5,7 +5,7 @@ if( typeof require === 'function' ){
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-var SoundVsSilence = function( $ele, _w, _h, _thresh ){
+var SoundVsSilence = function( $ele, _w, _h, _thresh, _isAnimated ){
 	var that = this;
 	this.threshold = _thresh;
 	this.$ele = $ele;
@@ -13,7 +13,7 @@ var SoundVsSilence = function( $ele, _w, _h, _thresh ){
 	//this.$ele.append( this.c.canvas );
 	this.width = _w;
 	this.height = _h;
-	this.chart = new DonutChart( this.$ele[0], this.width, this.height );
+	this.chart = new DonutChart( this.$ele[0], this.width, this.height, null, _isAnimated );
 	this.data = [ {value: 0}, {value: 0} ];
 	this.init();
 }

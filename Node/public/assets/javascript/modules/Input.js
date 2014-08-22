@@ -136,6 +136,9 @@ Input.prototype = {
 	},
 	getLatestState: function(){
 		return this.saver.getLatestState();
+	}, 
+	getDebugPixelsAsBase64: function(){
+		return this.c.canvas.toDataURL();
 	}
 };
 

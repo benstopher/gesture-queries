@@ -3,7 +3,7 @@
 <head>
 	<title>Skeleton Queries</title>
 	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
-	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+	<!--<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">-->
 </head>
 <body>
 
@@ -113,12 +113,12 @@
 	<script>
 		var saveSocket = io.connect( 'http://localhost/save-charts' );
 
-		var SoundVsSilence = new SoundVsSilence( $('#graph-donut-sound'), $('#graph-donut-sound').width(), $('#graph-donut-sound').width() );
+		var SoundVsSilence = new SoundVsSilence( $('#graph-donut-sound'), $('#graph-donut-sound').width(), $('#graph-donut-sound').width(), null, true );
 
 		var lineChart_hands = new LineChart( '#graph-line-span', $('#graph-line-span').width(), $('#graph-line-span').width() * 0.1);
 		var lineChart_length = new LineChart( '#graph-line-length', $('#graph-line-length').width(), $('#graph-line-length').width() * 0.1 );
-		var donutChart_movement_not = new DonutChart( '#graph-donut-movement', $('#graph-donut-movement').width(), $('#graph-donut-movement').width(), this.help.piecolours[1] );
-		var donutChart_hands_open_closed = new DonutChart( '#graph-donut-hands', $('#graph-donut-hands').width(), $('#graph-donut-hands').width(), this.help.piecolours[2] );
+		var donutChart_movement_not = new DonutChart( '#graph-donut-movement', $('#graph-donut-movement').width(), $('#graph-donut-movement').width(), this.help.piecolours[1], true );
+		var donutChart_hands_open_closed = new DonutChart( '#graph-donut-hands', $('#graph-donut-hands').width(), $('#graph-donut-hands').width(), this.help.piecolours[2], true );
 
 		var input = new Input( $('#canvas-skeletons') , 1000/30, false, true, true );
 		input.start();
@@ -139,11 +139,13 @@
 		}
 
 		var saveCharts = function(){
-			saveSocket.emit( 'save-data', { data: donutChart_movement_not.getData(), type: 'donut', name: 'body-movement-vs-stillness' });
-			saveSocket.emit( 'save-data', { data: SoundVsSilence.getData(), type: 'donut', name: 'sound-vs-silence' });
-			saveSocket.emit( 'save-data', { data: donutChart_hands_open_closed.getData(), type: 'donut', name: 'hands-open-vs-closed' });
+			console.log( 'save time' );
+			saveSocket.emit( 'save-data', { data: donutChart_movement_not.getData(), type: 'donut', name: 'body-movement-vs-stillness', colours: donutChart_movement_not.clr });
+			saveSocket.emit( 'save-data', { data: SoundVsSilence.getData(), type: 'donut', name: 'sound-vs-silence', colours: SoundVsSilence.chart.clr });
+			saveSocket.emit( 'save-data', { data: donutChart_hands_open_closed.getData(), type: 'donut', name: 'hands-open-vs-closed', colours: donutChart_hands_open_closed.clr });
 			saveSocket.emit( 'save-data', { data: lineChart_length.getData(), type: 'line', name: 'user-height' });
 			saveSocket.emit( 'save-data', { data: lineChart_hands.getData(), type: 'line', name: 'arm-span' });
+			saveSocket.emit( 'save-data', { data: input.getDebugPixelsAsBase64(), type: 'base64', name: 'skeletons' });
 		};
 
 		setInterval( function(){

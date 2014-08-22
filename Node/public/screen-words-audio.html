@@ -83,6 +83,7 @@
 		var waveform = new WaveformRenderer( $('#graph-line-audio'), $('#graph-line-audio').width(), window.innerHeight * 0.2 );
 		var wordChartAdditions = 0;
 		var lastNodeAdditions = '';
+		var words = '';
 		
 		var updateWordChart = function(){
 			if( wordChartAdditions > 10 ){
@@ -92,12 +93,14 @@
 			var d = input.speech.getLastXStore( 25 );
 			if( new String( d ).valueOf() !== new String( lastNodeAdditions ).valueOf() ){
 				lastNodeAdditions = d;
+				words += ' ' + d;
 				d = wordsToNodeChart( d );
 				forceNodeChart_words.addData( d );
 				wordChartAdditions++;
 				if( wordChartAdditions%2 == 0 ){
 					$('#graph-node-words').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-					saveSocket.emit("save-data", $('#graph-node-words').html() );
+					saveSocket.emit("save-data", {svg: $('#graph-node-words').html(), words: words });
+					words = '';
 				}
 			}
 			setTimeout( function(){

@@ -67,7 +67,7 @@ ForceNodeChart.prototype = {
 		var that = this;
 
 		this.link = this.link.data( that.force.links(), function(d) { return d.source.id + "-" + d.target.id; });
-		this.link.enter().insert("line", ".node").attr("class", "link");
+		this.link.enter().insert("line", ".node").attr("class", "link").style("stroke-width", "2px").style("stroke", "#FFFFFF");
 		this.link.exit().remove();
 
 		this.node = this.node.data( that.force.nodes(), function(d) { return d.id; });
@@ -77,11 +77,14 @@ ForceNodeChart.prototype = {
       	this.node.append("text")
       		.attr( "class", function(d){ return (d.center) ? "center" : "" })
       		.attr("x", 10 )
+      		.style("fill", "#ffffff" )
+      		.style("text-transform", "uppercase")
       		.text(function(d) { return d.word });
       	this.node.append( "circle" )
       		.attr("x", -3)
       		.attr("y", -3)
-      		.attr("r", 6);
+      		.attr("r", 6)
+      		.style( "fill", "#FFFFFF" )
 		this.node.exit().remove();
 
 		this.link = this.svg.selectAll( ".link" );

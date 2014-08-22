@@ -64,17 +64,20 @@ DonutChart.prototype = {
 			.insert( "path" )
 			.style( "fill", function(d,i) { return that.colour( i ); })
 			.attr( "class", "slice" );
-
-		slice		
-			.transition().duration( 100 )
-			.attrTween("d", function( d ) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate( 0 );
-				return function(t) {
-					return that.arc( interpolate( t ) );
-				};
-			});
+		if( this.isAnimated ){
+			slice		
+				.transition().duration( 100 )
+				.attrTween("d", function( d ) {
+					this._current = this._current || d;
+					var interpolate = d3.interpolate(this._current, d);
+					this._current = interpolate( 0 );
+					return function(t) {
+						return that.arc( interpolate( t ) );
+					};
+				});
+		} else {
+			slice.attr( "d", function( d ){ return that.arc( d ) });
+		}
 
 		slice.exit()
 			.remove();

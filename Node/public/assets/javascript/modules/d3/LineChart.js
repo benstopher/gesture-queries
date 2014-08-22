@@ -24,6 +24,8 @@ LineChart.prototype = {
 		this.svg.append("path")
     		.attr("class", c )
     		.attr("d", this.line( [] ) )
+    		.style( "stroke-width", "2px" )
+    		.style( "fill", "none" )
     		.style( "stroke", function(d,i) {  return that.colour( id || 0  ); });
 	},
 	init: function(){

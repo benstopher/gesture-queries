@@ -5,6 +5,7 @@ var kinectOSC = require( './modules/Kinect.js' );
 var fs = require( 'fs' );
 var d3 = require('d3');
 
+var help = require( './public/assets/javascript/modules/help.js' );
 var DonutChart = require( './public/assets/javascript/modules/d3/DonutChart.js');
 var ForceNodeChart = require( './public/assets/javascript/modules/d3/ForceNodeChart.js');
 var LineChart = require( './public/assets/javascript/modules/d3/LineChart.js');
@@ -18,6 +19,7 @@ var Twitter = ( function(){
 var savePath = '';
 var dataSavePath = '';
 var svgSavePath = '';
+var pngSavePath = '';
 var svgStyles = fs.readFileSync( "./public/assets/stylesheets/svg-style.css", { encoding: 'utf8' } );
 
 
@@ -34,11 +36,15 @@ var setupSave = function( timestamp ){
 		fs.mkdir( savePath, function(){
 			dataSavePath = savePath + "data/";
 			svgSavePath = savePath + "svg/";
+			pngSavePath = savePath + "png/";
 			fs.mkdir( dataSavePath, function(){
 				console.log( "Save directory made: " + dataSavePath );
 			});
 			fs.mkdir( svgSavePath, function(){
 				console.log( "Save directory made: " + svgSavePath );
+			});
+			fs.mkdir( pngSavePath, function(){
+				console.log( "Save directory made: " + pngSavePath );
 			})
 		} );
 	});
@@ -61,7 +67,8 @@ var kinect = new kinectOSC( 12001, '127.0.0.1' );
 var socket = io.listen(server,  { log: false });
 var kinectSocket;
 
-socket.of( '/kinect' ).on('connection', function(socket) {	
+socket.of( '/kinect' ).on('connection', function(socket) {
+	console.log( 'kinect connection' );
 	socket.emit( "kinect-start" );
 	kinectSocket = socket;		
 });
@@ -91,35 +98,50 @@ socket.of( '/twitter' ).on('connection', function(socket) {
 });
 
 socket.of( '/save-charts' ).on( 'connection', function( socket ){
+	console.log( 'save socket connection made. ' );
 	socket.on( 'save-data', function( data ){
 		var chart;
 		var name = data.name;
+		var colours = data.colours;
 		chartSaveCounts[name] = ( typeof chartSaveCounts[name] !== 'undefined' ) ? chartSaveCounts[name] + 1 : 0;
 		console.log( chartSaveCounts );
 		if( data.type === 'donut' ){
 			console.log( 'create donut chart' );
-			chart = new DonutChart( null, 1280, 800, null, false);
+			chart = new DonutChart( null, 1280, 800, colours, false);
 		} else if( data.type === 'line' ){
 			console.log( 'create line chart' );
 			chart = new LineChart( null, 1280, 800, null );
 		} else if( data.type === 'stream' ){
 			console.log( 'create stream graph' );
 			chart = new StreamGraph( null, 1280, 800, null );
+		} else if( data.type === 'base64'){
+			console.log( 'save pixels as png' );
+			//indebted to: http://stackoverflow.com/questions/20267939/nodejs-write-base64-image-file
+			var matches = data.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+			fs.writeFile( pngSavePath + name + "-" + chartSaveCounts[name] + ".png", new Buffer(matches[2], 'base64'), function( err ){
+				console.log( "SAVED CHART (PNG)." );
+			} )
+			return;
 		} else {
 			return;
 		}
 		
 		chart.addData( data.data );
 		//chart.ele.insert( function(){ return svgStyles; }, chart.svg );
-		chart.addStylesInline( svgStyles );
-		console.log( chart.ele.html() );
+		//chart.addStylesInline( svgStyles );
+		//console.log( chart.ele.html() );
 
 		// CHANGE: make this save just the (timestamped) JSON data - for safe keeping
 		// the visuals will be saved by a screen recording
 
 		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + chart.ele.html();
+
 		fs.writeFile( svgSavePath + name + "-" + chartSaveCounts[name] + ".svg", svg, function( err ){
-			console.log( "SAVED CHART." );
+			console.log( "SAVED CHART (SVG)." );
+		});
+
+		fs.writeFile( dataSavePath + name + "-" + chartSaveCounts[name] + ".json", JSON.stringify( data.data ), function( err ){
+			console.log( "SAVED CHART (DATA)." );
 		});
 
 		// var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
@@ -131,7 +153,10 @@ socket.of( '/save-charts' ).on( 'connection', function( socket ){
 
 socket.of( '/save-words' ).on( 'connection', function( socket ){
 	socket.on( 'save-data', function( data ){
-		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
+		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data.svg;
+		fs.writeFile( dataSavePath + "words-" + wordSaveCount + ".txt", data.words, function( err ){
+			console.log( "SAVED CHART (DATA)." );
+		});
 		fs.writeFile( svgSavePath + "words-" + wordSaveCount + ".svg", svg, function( err ){
 			console.log( "SAVED WORDS." );
 		});
