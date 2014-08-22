@@ -1,8 +1,12 @@
+if( typeof require === 'function' ){
+	var help = require( '../help.js' );
+}
+
 var nodes = [];
 var links = [];
 var ForceNodeChart = function( _ele, _w, _h ){
 	this.eleString = _ele;
-	this.ele = d3.select( this.eleString );
+	this.ele = ( this.eleString ) ? d3.select( this.eleString ) : d3.select('body').html('');
 	this.margin = {top: 0, right: 0, bottom: 0, left: 0},
 	this.width = _w - this.margin.left - this.margin.right;
 	this.height = _h - this.margin.top - this.margin.bottom;
@@ -162,5 +166,10 @@ ForceNodeChart.prototype = {
 	},
 	getData: function(){
 		return this.ele.data();
+	},
+	addStylesInline: function( style ){
+		this.ele.select( 'svg' ).insert( 'style', ':first-child' ).attr('type', 'text/css' ).html( style );
 	}
 };
+
+if (typeof module === "object" && module.exports) module.exports = ForceNodeChart;

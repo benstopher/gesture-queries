@@ -37,3 +37,6 @@ var help = {
 		return "hsl(" + Math.random() * 360 + ",100%,50%)";
 	}
 }
+
+
+if (typeof module === "object" && module.exports) module.exports = help;

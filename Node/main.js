@@ -3,6 +3,13 @@ var connect = require( 'connect' );
 var io = require( 'socket.io' );
 var kinectOSC = require( './modules/Kinect.js' );
 var fs = require( 'fs' );
+var d3 = require('d3');
+
+var DonutChart = require( './public/assets/javascript/modules/d3/DonutChart.js');
+var ForceNodeChart = require( './public/assets/javascript/modules/d3/ForceNodeChart.js');
+var LineChart = require( './public/assets/javascript/modules/d3/LineChart.js');
+var StreamGraph = require( './public/assets/javascript/modules/d3/StreamGraph.js');
+
 var DATA = {};
 var Twitter = ( function(){
 	var t = require( './modules/Twitter.js' );
@@ -10,19 +17,34 @@ var Twitter = ( function(){
 })();
 var savePath = '';
 var dataSavePath = '';
+var svgSavePath = '';
+var svgStyles = fs.readFileSync( "./public/assets/stylesheets/svg-style.css", { encoding: 'utf8' } );
+
+
+
 
 var makeTimestamp = function(){
 	return new Date().getTime();
 };
 
+
 var setupSave = function( timestamp ){
 	savePath = __dirname + "/data/" + timestamp + "/";
-	dataSavePath = savePath + "/data";
-	fs.mkdir( __dirname + "/data/" + timestamp, function(){
-		"DIRMADE"
-	} );
+	fs.mkdir( __dirname + "/data/", function(){ 
+		fs.mkdir( savePath, function(){
+			dataSavePath = savePath + "data/";
+			svgSavePath = savePath + "svg/";
+			fs.mkdir( dataSavePath, function(){
+				console.log( "Save directory made: " + dataSavePath );
+			});
+			fs.mkdir( svgSavePath, function(){
+				console.log( "Save directory made: " + svgSavePath );
+			})
+		} );
+	});
+	
 };
-var chartSaveCount = 0;
+var chartSaveCounts = {};
 var wordSaveCount = 0;
 var timestamp = makeTimestamp();
 
@@ -70,18 +92,47 @@ socket.of( '/twitter' ).on('connection', function(socket) {
 
 socket.of( '/save-charts' ).on( 'connection', function( socket ){
 	socket.on( 'save-data', function( data ){
-		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
-		fs.writeFile( savePath + "chart-" + chartSaveCount + ".svg", svg, function( err ){
+		var chart;
+		var name = data.name;
+		chartSaveCounts[name] = ( typeof chartSaveCounts[name] !== 'undefined' ) ? chartSaveCounts[name] + 1 : 0;
+		console.log( chartSaveCounts );
+		if( data.type === 'donut' ){
+			console.log( 'create donut chart' );
+			chart = new DonutChart( null, 1280, 800, null, false);
+		} else if( data.type === 'line' ){
+			console.log( 'create line chart' );
+			chart = new LineChart( null, 1280, 800, null );
+		} else if( data.type === 'stream' ){
+			console.log( 'create stream graph' );
+			chart = new StreamGraph( null, 1280, 800, null );
+		} else {
+			return;
+		}
+		
+		chart.addData( data.data );
+		//chart.ele.insert( function(){ return svgStyles; }, chart.svg );
+		chart.addStylesInline( svgStyles );
+		console.log( chart.ele.html() );
+
+		// CHANGE: make this save just the (timestamped) JSON data - for safe keeping
+		// the visuals will be saved by a screen recording
+
+		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + chart.ele.html();
+		fs.writeFile( svgSavePath + name + "-" + chartSaveCounts[name] + ".svg", svg, function( err ){
 			console.log( "SAVED CHART." );
 		});
-		chartSaveCount++;
+
+		// var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
+		// fs.writeFile( svgSavePath + "chart-" + chartSaveCount + ".svg", svg, function( err ){
+		// 	console.log( "SAVED CHART." );
+		// });
 	});
 });
 
 socket.of( '/save-words' ).on( 'connection', function( socket ){
 	socket.on( 'save-data', function( data ){
 		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
-		fs.writeFile( savePath + "words-" + wordSaveCount + ".svg", svg, function( err ){
+		fs.writeFile( svgSavePath + "words-" + wordSaveCount + ".svg", svg, function( err ){
 			console.log( "SAVED WORDS." );
 		});
 		wordSaveCount++;
@@ -89,8 +140,6 @@ socket.of( '/save-words' ).on( 'connection', function( socket ){
 });
 
 socket.of( '/data' ).on('connection', function( socket ) {	
-
-
 	socket.emit( "data-ready" );
 	socket.on( 'save-data', function( data ){
 		DATA = data;
@@ -113,7 +162,6 @@ socket.of('/query-destination' ).on('connection', function( socket ){
 
 socket.of( '/query-source' ).on('connection', function( socket ) {	
 	socket.on( 'data', function( data ){
-
 		if( typeof queryDestSocket !== 'undefined' ){
 			// send query information to the results page,
 			// also send kinect arm-spread information for 

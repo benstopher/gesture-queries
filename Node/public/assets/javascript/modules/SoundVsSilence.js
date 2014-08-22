@@ -1,3 +1,7 @@
+if( typeof require === 'function' ){
+	var help = require( '../help.js' );
+}
+
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -59,5 +63,10 @@ SoundVsSilence.prototype = {
 	},
 	getData: function(){
 		return this.chart.getData();
+	},
+	addStylesInline: function( style ){
+		this.chart.addStylesInline( style );
 	}
 };
+
+if (typeof module === "object" && module.exports) module.exports = SoundVsSilence;

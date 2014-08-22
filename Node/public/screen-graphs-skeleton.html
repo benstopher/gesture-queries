@@ -111,7 +111,7 @@
 	<script src="assets/javascript/scratch_data_conversions.js"></script>
 
 	<script>
-	var saveSocket = io.connect( 'http://localhost/save-charts' );
+		var saveSocket = io.connect( 'http://localhost/save-charts' );
 
 		var SoundVsSilence = new SoundVsSilence( $('#graph-donut-sound'), $('#graph-donut-sound').width(), $('#graph-donut-sound').width() );
 
@@ -137,18 +137,29 @@
 				donutChart_hands_open_closed.addData( handsOpenToDonutChart( allHands ) );
 			}
 		}
+
+		var saveCharts = function(){
+			saveSocket.emit( 'save-data', { data: donutChart_movement_not.getData(), type: 'donut', name: 'body-movement-vs-stillness' });
+			saveSocket.emit( 'save-data', { data: SoundVsSilence.getData(), type: 'donut', name: 'sound-vs-silence' });
+			saveSocket.emit( 'save-data', { data: donutChart_hands_open_closed.getData(), type: 'donut', name: 'hands-open-vs-closed' });
+			saveSocket.emit( 'save-data', { data: lineChart_length.getData(), type: 'line', name: 'user-height' });
+			saveSocket.emit( 'save-data', { data: lineChart_hands.getData(), type: 'line', name: 'arm-span' });
+		};
+
 		setInterval( function(){
-			$('#graph-donut-movement').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-			saveSocket.emit("save-data", $('#graph-donut-movement').html() );
-			$('#graph-donut-sound').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-			saveSocket.emit("save-data", $('#graph-donut-sound').html() );
-			$('#graph-donut-hands').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-			saveSocket.emit("save-data", $('#graph-donut-hands').html() );
-			$('#graph-line-length').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-			saveSocket.emit("save-data", $('#graph-line-length').html() );
-			$('#graph-line-span').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-			saveSocket.emit("save-data", $('#graph-line-span').html() );
-		}, 30000 );
+			// $('#graph-donut-movement').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			// saveSocket.emit("save-data", $('#graph-donut-movement').html() );
+			// $('#graph-donut-sound').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			// saveSocket.emit("save-data", $('#graph-donut-sound').html() );
+			// $('#graph-donut-hands').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			// saveSocket.emit("save-data", $('#graph-donut-hands').html() );
+			// $('#graph-line-length').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			// saveSocket.emit("save-data", $('#graph-line-length').html() );
+			// $('#graph-line-span').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+			// saveSocket.emit("save-data", $('#graph-line-span').html() );
+			saveCharts();
+	
+		}, 10000 );
 	</script>
 </body>
 </html>
