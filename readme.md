@@ -29,3 +29,14 @@ Beginning on line 2, there's a this.queries object that expects to have Kimono o
 
 new Kimono( "API_NUM", "YOUR_API_KEY", "PATH_TO_QUERY" )
 
+##Splitting Video to Frames
+
+There is a script (```ffmpeg/split-video-to-frames.sh```) which uses ffmpeg to split a video into frames at a specified interval. This is to allow the recording of a session and its output as images.
+
+Usage is as follows
+
+```sh ffmpeg/split-video-to-frames.sh path-to-input-file.mov 5 00:00:17 output-file-prefix```
+
+This will take the file ```path-to-input-file.mov``` and output 5 frames every second, starting at 17 seconds from the beginning. The files will be named with ```output-file-prefix-000.png```, with ```-000``` incrementing with each file. 
+
+The files will be placed in the same place as the script, make sure to move them before running it again, otherwise they'll be overwritten.

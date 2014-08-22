@@ -1,7 +1,7 @@
 # takes a video and splits it into frames at a specified interval
 # example usage:
 #
-# sh ./split-video-to-frames.sh intput-file.mov 1 0 output-file-prefix
+# sh ./split-video-to-frames.sh input-file.mov 1 00:00:10 output-file-prefix
 
 INPUT_FILENAME=$1
 FRAMERATE=$2
