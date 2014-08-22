@@ -31,6 +31,8 @@ new Kimono( "API_NUM", "YOUR_API_KEY", "PATH_TO_QUERY" )
 
 ##Splitting Video to Frames
 
+(Note, usage of this requires ffmpeg to be installed. The best way to do this, if you're using OS X, is with Homebrew. See [brew.sh](http://brew.sh) for details on how to get it running and then run ```brew install ffmpeg```)
+
 There is a script (```ffmpeg/split-video-to-frames.sh```) which uses ffmpeg to split a video into frames at a specified interval. This is to allow the recording of a session and its output as images.
 
 Usage is as follows:
