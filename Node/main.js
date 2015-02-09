@@ -99,6 +99,7 @@ socket.of( '/twitter' ).on('connection', function(socket) {
 
 socket.of( '/save-charts' ).on( 'connection', function( socket ){
 	console.log( 'save socket connection made. ' );
+	/*
 	socket.on( 'save-data', function( data ){
 		var chart;
 		var name = data.name;
@@ -149,6 +150,7 @@ socket.of( '/save-charts' ).on( 'connection', function( socket ){
 		// 	console.log( "SAVED CHART." );
 		// });
 	});
+	*/
 });
 
 socket.of( '/save-words' ).on( 'connection', function( socket ){
