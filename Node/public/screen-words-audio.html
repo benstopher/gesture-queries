@@ -3,7 +3,7 @@
 <head>
 	<title>Skeleton Queries</title>
 	<link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css">
-	<link rel="stylesheet" type="text/css" href="assets/stylesheets/svg-style.css">
+	
 	<style type="text/css">
 		html,body{
 			overflow: hidden;
@@ -111,12 +111,15 @@
 		var lastEmitted = '';
 		
 		var sendNewQuery = function(){
-			var emit = input.speech.getLastXStore( 3 );
+			//var emit = input.speech.getLastXStore( 3 );
+			//console.log( 'call getNewStore ' );
+			var emit = input.speech.getNewStore();
+			//console.log( "emit? ", emit );
 			if( new String(emit).valueOf() !== new String(lastEmitted).valueOf() ){
-				console.log( "Send to query: " + emit );
+				//console.log( "Send to query: " + emit );
 				lastEmitted = emit;
 				socket.emit("data", emit );
-				setTimeout( function(){
+				setTimeout( function(){					
 					sendNewQuery();
 				}, 20000 );
 			} else {

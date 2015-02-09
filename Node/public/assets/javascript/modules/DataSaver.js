@@ -42,7 +42,7 @@ DataSaver.prototype = {
 		for( var i in this.sources ){
 			var source = this.sources[i].source;
 			var destination = this.sources[i].destination;
-			var data = source.getNewStore();
+			var data = source.getNewStore( true );
 			if( data ){
 				someNewData = true;
 				state[ this.sources[i].title ] = { 

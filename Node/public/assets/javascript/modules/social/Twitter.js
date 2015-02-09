@@ -1,6 +1,7 @@
 var Twitter = function(){
 	var that = this;
 	this.socket = io.connect( 'http://localhost/twitter' );
+	console.log( "CONNECT TO http://localhost/twitter" );
 	this.socket.on('result', function( data ){
 		that._onResult( data );
 	});

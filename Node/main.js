@@ -75,7 +75,7 @@ kinect.onFrameUpdate = function( data ){
 	}
 }
 
-socket.of( '/twitter' ).on('connection', function(socket) {	
+socket.of( '/twitter' ).on( 'connection', function(socket) {	
 	socket.on( 'search', function( data ){
 		Twitter.search( data.query, function( result ){
 			socket.emit( 'result', result );

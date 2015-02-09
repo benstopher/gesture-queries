@@ -141,9 +141,3 @@ Input.prototype = {
 		return this.c.canvas.toDataURL();
 	}
 };
-
-
-
-
-
-

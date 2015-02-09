@@ -6,6 +6,7 @@ GetSpeech = function(){
 	this.transcript = '';
 	this.interim_transcript = '';
 	this.lastTranscriptGetLength = 0;
+	this.transcriptCount = 0;
 	this.recognition.onstart = function(){
 		that._onStart();
 	};
@@ -34,6 +35,7 @@ GetSpeech.prototype = {
 	    for (var i = event.resultIndex; i < event.results.length; ++i) {
 			if( event.results[i].isFinal ){
 				this.transcript += event.results[i][0].transcript;
+				this.transcriptCount++;
 			} else {
 				this.interim_transcript += event.results[i][0].transcript;
 			}
@@ -45,10 +47,13 @@ GetSpeech.prototype = {
 	getAllStore: function(){
 		return this.transcript;
 	},
-	getNewStore: function(){
+	getNewStore: function( retainNewData ){	
+		//console.log( "start get at: ", this.lastTranscriptGetLength, "full amount: ", this.transcript.length );
 		var out = this.transcript.substring( this.lastTranscriptGetLength );
 		if( out.length > 0 ){
-			this.lastTranscriptGetLength = this.transcript.length;
+			if( !retainNewData ){
+				this.lastTranscriptGetLength = this.transcript.length;
+			}
 			return out;
 		}
 		return false;
@@ -76,5 +81,11 @@ GetSpeech.prototype = {
 		var out = getNewTranscript();
 		this.transcript = '';
 		return out;
+	},
+	fakeTranscript: function( fake ){
+		this.transcript += fake;
+		this.transcriptCount++;
+		if( typeof this.onResult === 'function' )
+			this.onResult();
 	}
 };

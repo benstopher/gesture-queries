@@ -14,21 +14,24 @@ var Twitter = function(){
 };
 
 Twitter.prototype = {
-	wrapResult: function( type, result, count ){
+	wrapResult: function( type, result, count, query ){
 		var wrapped = {
 			type: type,
+			query: query,
 			data: {}
 		};
 		if( result ){
 			var i = 0;
 			var data = JSON.parse(result);
 			var retweets_excluded = [];
-			for( var i = 0; i < data.statuses.length; i++ ){
-				if( !data.statuses[i].retweeted_status ){
-					retweets_excluded.push( data.statuses[i] );
-				}
-				if( retweets_excluded >= count ){
-					break;
+			if( data.statuses ){
+				for( var i = 0; i < data.statuses.length; i++ ){
+					if( !data.statuses[i].retweeted_status ){
+						retweets_excluded.push( data.statuses[i] );
+					}
+					if( retweets_excluded >= count ){
+						break;
+					}
 				}
 			}
 			data.statuses = retweets_excluded;
@@ -38,6 +41,9 @@ Twitter.prototype = {
 	},
 	search: function( what, callback ){
 		var that = this;
+		var query = {
+			what: what
+		};
 		this.oauth.get(
 			'https://api.twitter.com/1.1/search/tweets.json?count=50&q=' + encodeURIComponent( what ),
 			credentials.user.key,
@@ -46,7 +52,7 @@ Twitter.prototype = {
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search', data, 10 );
+				var result = that.wrapResult( 'search', data, 10, query );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
@@ -56,6 +62,11 @@ Twitter.prototype = {
 	},
 	searchLocation: function( what, lat, lon, radius, callback ){
 		var that = this;
+		var query = {
+			latitude: lat,
+			longitude: lon,
+			radius: radius
+		};
 		this.oauth.get(
 			'https://api.twitter.com/1.1/search/tweets.json?count=50&q=' + encodeURIComponent( what ) + '&geocode=' + lat + ',' + lon + ',' + radius,
 			credentials.user.key,
@@ -64,7 +75,7 @@ Twitter.prototype = {
 				if(error){
 					console.error("ERROR: ", error); 
 				}
-				var result = that.wrapResult( 'search-location', data, 20 );
+				var result = that.wrapResult( 'search-location', data, 20, query );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );
@@ -74,6 +85,9 @@ Twitter.prototype = {
 	},
 	userTimeline: function( who, callback ){
 		var that = this;
+		var query = {
+			who: who
+		};
 		this.oauth.get(
 			'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + who,
 			credentials.user.key,
@@ -82,7 +96,7 @@ Twitter.prototype = {
 				if(error){
 					console.error( "ERROR: ", error ); 
 				}
-				var result = that.wrapResult( 'user-timeline', data, 25 );
+				var result = that.wrapResult( 'user-timeline', data, 25, query );
 				that._onResult( result );
 				if( typeof callback === 'function' ){
 					callback( result );

@@ -20,6 +20,7 @@
 			.masonry-item{
 				width: 19.62em;
 				margin-bottom: 1.25em;
+				min-height: 13.125em;
 				position: relative;
 				opacity: 1;
 				-webkit-transition: opacity 0.3s ease-in-out, top 0.1s linear, left 0.1s linear, right 0.1s linear, bottom 0.1s linear;
@@ -42,6 +43,20 @@
 				width: 100%;
 				height: auto;
 				display: block;
+			}
+
+		.result.result--twitter.radius-5mi{
+			width: 40.45em;
+		}
+		.result.result--twitter.radius-100mi{
+			
+		}
+		.result.result--twitter.radius-1000mi{
+			width: 9.81em;
+		}	
+
+			.result.no-img.radius-5mi{
+				width: 19.62em;
 			}
 
 		.result.result--twitter hgroup{
@@ -267,9 +282,9 @@
 			}
 			//if there's no content, we return false
 			if( elementCount > 0 ){
-				console.log( result );
+				//console.log( result );
 			} else {
-				console.warn( 'Kimono returned empty result' );
+				//console.warn( 'Kimono returned empty result' );
 				return false;
 			}
 
@@ -283,7 +298,7 @@
 					var $subtitle = $( '<h2>' + result.title + '</h2>' );
 					$header.append( $subtitle );
 				} else {
-					console.log( 'result title is string' );
+					//console.log( 'result title is string' );
 				}
 				$ele.append( $header );
 				$ele.append( $timestamp );
@@ -344,7 +359,9 @@
 			layoutLoop();
 		};
 
-		var armSpreadToDistance = function( spread ){
+		var armSpreadToDistance = function( spread ){ 
+			// if the distances (5mi, 100mi etc) change, the styles will need to change too.
+			// items have the radius-5mi style class added
 			var lowThresh = 0.05;
 			var highThresh = 0.6;
 			var result = '5mi';
@@ -362,19 +379,21 @@
 				queryText += ' ' + chance.pick( resultToQueryModifierPool );
 			}
 			lastQuery = queryText;
-			console.log( "QUERY: " + queryText );
+			//console.log( "QUERY: " + queryText );
 			queryMaker.query( queryText );
+			console.log( "TWITTER: search ", queryText );
 			twitter.search( queryText );			
 			if( userLocation.fromAPI ){
 				var distanceToQuery = armSpreadToDistance( data.armSpread );
 				console.log( 'Calc-ed dist: ', distanceToQuery );
 				twitter.searchLocation( queryText, userLocation.latitude, userLocation.longitude, distanceToQuery );
+				console.log( "TWITTER: search location", queryText, userLocation.latitude, userLocation.longitude, distanceToQuery );
 			}
 			//twitter.userTimeline( 'benstopher' );
 		};
 
 		socket.on('query-data', function( data ){
-			console.log( "DATA: ", data );
+			//console.log( "DATA: ", data );
 			if( data.text.length > 0 ){
 				sendQueries( data );
 			}
@@ -406,12 +425,12 @@
 		// 	updateMasonry( eles );
 		// };
 		queryMaker.onEachResult = function( results ){
-			console.log( 'A kimono Result: ', results );
+			//console.log( 'A kimono Result: ', results );
 			if( typeof results !== 'undefined' ){
-				console.log( 'looping through results: ');
+				//console.log( 'looping through results: ');
 				var eles = [];
 				for( var i = 0; i < results.length; i++ ){
-					console.log( 'Result ' + i + ': ', results[i] );
+					//console.log( 'Result ' + i + ': ', results[i] );
 					var termFromQuery = lastQuery.split(' ');
 						termFromQuery = termFromQuery[ Math.floor( Math.random() * termFromQuery.length ) ];
 					var word = pickWordFromText( results[i].content.text || results[i].content );
@@ -430,13 +449,15 @@
 
 		twitter.onResult = function( result ){
 			var statuses;
-			var eles = [];
+			var eles = [];			
 			if( typeof result.data.statuses !== 'undefined' ){
 				statuses = result.data.statuses;
 			} else {
 				statuses = result.data;
 			}
+			console.log( "TWITTER RESULTS: ", result );
 			$( statuses ).each( function( i ){
+				console.log( "Twitter Result: ", this );
 				for( var j = 0; j < this.entities.urls.length; j++ ){
 					//console.log( 'replace URL' );
 					this.text = this.text.replace( this.entities.urls[j].url, ' ' );
@@ -446,6 +467,9 @@
 					resultToQueryModifierPool.push( word );
 				}
 				var $ele = wrapTwitterStatus( this );
+				if( result.type === 'search-location' ){
+					$ele.addClass( 'radius-' + result.query.radius );
+				}
 				if( $ele ){
 					eles.push( $ele[0] );
 				}
