@@ -1,5 +1,6 @@
 if( typeof require === 'function' ){
 	var help = require( '../help.js' );
+	var d3 = require( 'd3' );
 }
 
 var LineChart = function( _ele, _w, _h ){
