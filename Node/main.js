@@ -20,15 +20,11 @@ var savePath = '';
 var dataSavePath = '';
 var svgSavePath = '';
 var pngSavePath = '';
-var svgStyles = fs.readFileSync( "./public/assets/stylesheets/svg-style.css", { encoding: 'utf8' } );
-
-
-
+var svgStyles = fs.readFileSync( __dirname + "/public/assets/stylesheets/svg-style.css", { encoding: 'utf8' } );
 
 var makeTimestamp = function(){
 	return new Date().getTime();
 };
-
 
 var setupSave = function( timestamp ){
 	savePath = __dirname + "/data/" + timestamp + "/";
