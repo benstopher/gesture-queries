@@ -44,9 +44,9 @@ This will take the file ```path-to-input-file.mov``` and output 5 frames every s
 The files will be placed in the same place as the script, make sure to move them before running it again, otherwise they'll be overwritten.
 
 ## TO DO
--[] add new sources
-	-[] mechanical curator
-	-[] prosthetic knowledge
--[] startup script
--[] fix wordcloud saving, delay until they are positioned
+- [ ] add new sources
+  - [ ] mechanical curator
+  - [ ] prosthetic knowledge
+- [ ] startup script
+- [ ] fix wordcloud saving, delay until they are positioned
 
