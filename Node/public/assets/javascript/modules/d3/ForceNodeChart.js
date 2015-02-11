@@ -31,6 +31,13 @@ ForceNodeChart.prototype = {
 		  .append("g")
     	    .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
+    	this.svg.append("rect")
+    		.attr("x", 0)
+    		.attr("y", 0)
+    		.attr("width", this.width + this.margin.left + this.margin.right )
+		    .attr("height", this.height + this.margin.top + this.margin.bottom )
+		    .attr("fill", "#000000" );
+
     	this.link = this.svg.selectAll(".link");
 		this.node = this.svg.selectAll(".node");
 

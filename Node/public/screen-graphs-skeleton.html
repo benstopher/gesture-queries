@@ -140,11 +140,11 @@
 
 		var saveCharts = function(){
 			console.log( 'save time' );
-			saveSocket.emit( 'save-data', { data: donutChart_movement_not.getData(), type: 'donut', name: 'body-movement-vs-stillness', colours: donutChart_movement_not.clr });
-			saveSocket.emit( 'save-data', { data: SoundVsSilence.getData(), type: 'donut', name: 'sound-vs-silence', colours: SoundVsSilence.chart.clr });
-			saveSocket.emit( 'save-data', { data: donutChart_hands_open_closed.getData(), type: 'donut', name: 'hands-open-vs-closed', colours: donutChart_hands_open_closed.clr });
-			saveSocket.emit( 'save-data', { data: lineChart_length.getData(), type: 'line', name: 'user-height' });
-			saveSocket.emit( 'save-data', { data: lineChart_hands.getData(), type: 'line', name: 'arm-span' });
+			saveSocket.emit( 'save-data', { data: donutChart_movement_not.getSVG(), type: 'svg', name: 'body-movement-vs-stillness', colours: donutChart_movement_not.clr });
+			saveSocket.emit( 'save-data', { data: SoundVsSilence.getSVG(), type: 'svg', name: 'sound-vs-silence', colours: SoundVsSilence.chart.clr });
+			saveSocket.emit( 'save-data', { data: donutChart_hands_open_closed.getSVG(), type: 'svg', name: 'hands-open-vs-closed', colours: donutChart_hands_open_closed.clr });
+			saveSocket.emit( 'save-data', { data: lineChart_length.getSVG(), type: 'svg', name: 'user-height' });
+			saveSocket.emit( 'save-data', { data: lineChart_hands.getSVG(), type: 'svg', name: 'arm-span' });
 			saveSocket.emit( 'save-data', { data: input.getDebugPixelsAsBase64(), type: 'base64', name: 'skeletons' });
 		};
 

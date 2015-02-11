@@ -64,6 +64,9 @@ SoundVsSilence.prototype = {
 	getData: function(){
 		return this.chart.getData();
 	},
+	getSVG: function(){
+		return this.chart.getSVG();
+	},
 	addStylesInline: function( style ){
 		this.chart.addStylesInline( style );
 	}

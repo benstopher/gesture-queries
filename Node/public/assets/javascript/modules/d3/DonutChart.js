@@ -27,20 +27,22 @@ DonutChart.prototype = {
 	init: function(){
 		var that = this;
 
-		// this.colour = d3.scale.linear()
-  //   		.range(["#ff0000", "#ff00ff"]);
-
-  		//this.colour = d3.scale.category20();
   		this.colour = d3.scale.ordinal()
   			.range( this.clr );
-  		//console.log( this.colour.domain() );
 
 		this.svg = this.ele.append("svg")
 			.attr("width", this.width + this.margin.left + this.margin.right )
 		    .attr("height", this.height + this.margin.top + this.margin.bottom )
-		  .append("g");
+	   
+	    this.svg.append("rect")
+    		.attr("x", 0)
+    		.attr("y", 0)
+    		.attr("width", this.width + this.margin.left + this.margin.right )
+		    .attr("height", this.height + this.margin.top + this.margin.bottom )
+		    .attr("fill", "#000000" );
 
-		this.svg.attr( "transform", "translate(" + this.width/2 + "," + this.height/2 + ")" );
+		this.svg = this.svg.append("g")
+			.attr( "transform", "translate(" + this.width/2 + "," + this.height/2 + ")" );
 
 		this.svg.append( "g" ).attr( "class", "slices" );
 
@@ -63,8 +65,9 @@ DonutChart.prototype = {
 
 		slice.enter()
 			.insert( "path" )
-			.style( "fill", function(d,i) { return that.colour( i ); })
+			.attr( "fill", function(d,i) { return that.colour( i ); })
 			.attr( "class", "slice" );
+
 		if( this.isAnimated ){
 			slice		
 				.transition().duration( 100 )
@@ -85,6 +88,9 @@ DonutChart.prototype = {
 	},
 	getData: function(){
 		return this.data;
+	},
+	getSVG: function(){
+		return this.ele.html();
 	},
 	addStylesInline: function( style ){
 		this.ele.select( 'svg' ).insert( 'style', ':first-child' ).attr('type', 'text/css' ).html( style );

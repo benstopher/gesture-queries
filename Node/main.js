@@ -22,6 +22,8 @@ var svgSavePath = '';
 var pngSavePath = '';
 var svgStyles = fs.readFileSync( __dirname + "/public/assets/stylesheets/svg-style.css", { encoding: 'utf8' } );
 
+var SVG_HEADER = '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
 var makeTimestamp = function(){
 	return new Date().getTime();
 };
@@ -101,56 +103,32 @@ socket.of( '/save-charts' ).on( 'connection', function( socket ){
 		var colours = data.colours;
 		chartSaveCounts[name] = ( typeof chartSaveCounts[name] !== 'undefined' ) ? chartSaveCounts[name] + 1 : 0;
 		console.log( chartSaveCounts );
-		if( data.type === 'donut' ){
-			console.log( 'create donut chart' );
-			chart = new DonutChart( null, 1280, 800, colours, false);
-		} else if( data.type === 'line' ){
-			console.log( 'create line chart' );
-			chart = new LineChart( null, 1280, 800, null );
-		} else if( data.type === 'stream' ){
-			console.log( 'create stream graph' );
-			chart = new StreamGraph( null, 1280, 800, null );
-		} else if( data.type === 'base64'){
-			console.log( 'save pixels as png' );
+
+		if( data.type === 'base64' ){
+			// 	console.log( 'save pixels as png' );
 			//indebted to: http://stackoverflow.com/questions/20267939/nodejs-write-base64-image-file
 			var matches = data.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
 			fs.writeFile( pngSavePath + name + "-" + chartSaveCounts[name] + ".png", new Buffer(matches[2], 'base64'), function( err ){
 				console.log( "SAVED CHART (PNG)." );
-			} )
+			});
 			return;
-		} else {
-			return;
+		} else if( data.type === 'svg' ){
+			var svg = SVG_HEADER + data.data;
+			fs.writeFile( svgSavePath + name + "-" + chartSaveCounts[name] + ".svg", svg, function( err ){
+				console.log( "SAVED CHART (SVG)." );
+			});
 		}
-		
-		chart.addData( data.data );
-		//chart.ele.insert( function(){ return svgStyles; }, chart.svg );
-		//chart.addStylesInline( svgStyles );
-		//console.log( chart.ele.html() );
-
-		// CHANGE: make this save just the (timestamped) JSON data - for safe keeping
-		// the visuals will be saved by a screen recording
-
-		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + chart.ele.html();
-
-		fs.writeFile( svgSavePath + name + "-" + chartSaveCounts[name] + ".svg", svg, function( err ){
-			console.log( "SAVED CHART (SVG)." );
-		});
 
 		fs.writeFile( dataSavePath + name + "-" + chartSaveCounts[name] + ".json", JSON.stringify( data.data ), function( err ){
 			console.log( "SAVED CHART (DATA)." );
 		});
-
-		// var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data;
-		// fs.writeFile( svgSavePath + "chart-" + chartSaveCount + ".svg", svg, function( err ){
-		// 	console.log( "SAVED CHART." );
-		// });
 	});
 });
 
 socket.of( '/save-words' ).on( 'connection', function( socket ){
 	socket.on( 'save-data', function( data ){
-		var svg = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + data.svg;
-		fs.writeFile( dataSavePath + "words-" + wordSaveCount + ".txt", data.words, function( err ){
+		var svg = SVG_HEADER + data.svg;
+		fs.writeFile( dataSavePath + "words-" + wordSaveCount + ".txt", data.words, {encoding: 'utf8'}, function( err ){
 			console.log( "SAVED CHART (DATA)." );
 		});
 		fs.writeFile( svgSavePath + "words-" + wordSaveCount + ".svg", svg, function( err ){

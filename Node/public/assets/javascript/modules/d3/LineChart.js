@@ -25,9 +25,9 @@ LineChart.prototype = {
 		this.svg.append("path")
     		.attr("class", c )
     		.attr("d", this.line( [] ) )
-    		.style( "stroke-width", "2px" )
-    		.style( "fill", "none" )
-    		.style( "stroke", function(d,i) {  return that.colour( id || 0  ); });
+    		.attr( "stroke-width", "2" )
+    		.attr( "fill", "none" )
+    		.attr( "stroke", function(d,i) {  return that.colour( id || 0  ); });
 	},
 	init: function(){
 		var that = this;
@@ -59,6 +59,13 @@ LineChart.prototype = {
 		    .attr("height", this.height + this.margin.top + this.margin.bottom )
 		  .append("g")
     	    .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");	     	
+
+    	this.svg.append("rect")
+    		.attr("x", 0)
+    		.attr("y", 0)
+    		.attr("width", this.width + this.margin.left + this.margin.right )
+		    .attr("height", this.height + this.margin.top + this.margin.bottom )
+		    .attr("fill", "#000000" );
 
     	this.addLine( 1 );
 
@@ -116,6 +123,9 @@ LineChart.prototype = {
 	},
 	getData: function(){
 		return this.data;
+	},
+	getSVG: function(){
+		return this.ele.html();
 	},
 	addStylesInline: function( style ){
 		this.ele.select( 'svg' ).insert( 'style', ':first-child' ).attr('type', 'text/css' ).html( style );
