@@ -9,6 +9,8 @@ var WaveformRenderer = function( $ele, _w, _h ){
 	this.width = _w;
 	this.height = _h;
 	this.chart = new LineChart( this.$ele[0], this.width, this.height );
+	//delete the background square from the line chart:
+	this.chart.svg.select('rect').remove();
 	this.chart.setAdaptableY( false, 200, 55 );
 	this.chart.setInterpolation( false );
 	this.init();
