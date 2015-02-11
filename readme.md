@@ -48,5 +48,6 @@ The files will be placed in the same place as the script, make sure to move them
   - [ ] mechanical curator
   - [ ] prosthetic knowledge
 - [ ] startup script
-- [ ] fix wordcloud saving, delay until they are positioned
+- [ ] fix wordcloud double addition of words
+- [x] fix wordcloud saving, delay until they are positioned
 
