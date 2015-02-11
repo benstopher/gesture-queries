@@ -42,3 +42,11 @@ Usage is as follows:
 This will take the file ```path-to-input-file.mov``` and output 5 frames every second, starting at 17 seconds from the beginning. The files will be named with ```output-file-prefix-000.png```, with ```-000``` incrementing with each file. 
 
 The files will be placed in the same place as the script, make sure to move them before running it again, otherwise they'll be overwritten.
+
+## TO DO
+-[] add new sources
+	-[] mechanical curator
+	-[] prosthetic knowledge
+-[] startup script
+-[] fix wordcloud saving, delay until they are positioned
+
