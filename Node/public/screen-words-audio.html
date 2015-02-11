@@ -90,19 +90,25 @@
 				forceNodeChart_words.reset();
 				wordChartAdditions = 0;
 			}
-			var d = input.speech.getLastXStore( 25 );
-			if( new String( d ).valueOf() !== new String( lastNodeAdditions ).valueOf() ){
-				lastNodeAdditions = d;
-				words += ' ' + d;
-				d = wordsToNodeChart( d );
-				forceNodeChart_words.addData( d );
-				wordChartAdditions++;
-				if( wordChartAdditions%2 == 0 ){
-					setTimeout( function(){
-						$('#graph-node-words').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
-						saveSocket.emit("save-data", {svg: $('#graph-node-words').html(), words: words });
-						words = '';
-					}, 8000 );					
+			var d = input.speech.getNewStore( true );
+			if( d.length > 0 ){
+				if( new String( d ).valueOf() !== new String( lastNodeAdditions ).valueOf() ){
+					
+					console.log( "ADDING WORDS: " );
+					console.log( d );
+
+					lastNodeAdditions = d;
+					words += ' ' + d;
+					d = wordsToNodeChart( d );
+					forceNodeChart_words.addData( d );
+					wordChartAdditions++;
+					if( wordChartAdditions%2 == 0 ){
+						setTimeout( function(){
+							$('#graph-node-words').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
+							saveSocket.emit("save-data", {svg: $('#graph-node-words').html(), words: words });
+							words = '';
+						}, 8000 );					
+					}
 				}
 			}
 			setTimeout( function(){
