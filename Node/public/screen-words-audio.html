@@ -107,13 +107,13 @@
 							$('#graph-node-words').find('svg').attr( 'version', '1.1' ).attr( 'xmlns', 'http://www.w3.org/2000/svg' );
 							saveSocket.emit("save-data", {svg: $('#graph-node-words').html(), words: words });
 							words = '';
-						}, 8000 );					
+						}, 4000 );					
 					}
 				}
 			}
 			setTimeout( function(){
 				updateWordChart();
-			}, 10000 );
+			}, 5000 );
 		}
 
 		var lastEmitted = '';
@@ -129,7 +129,7 @@
 				socket.emit("data", emit );
 				setTimeout( function(){					
 					sendNewQuery();
-				}, 20000 );
+				}, 10000 );
 			} else {
 				setTimeout( function(){
 					sendNewQuery();
