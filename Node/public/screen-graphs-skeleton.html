@@ -131,11 +131,11 @@
 			console.log( 'last 1000: ' + last1000Bodies.length );
 
 			if( latest.bodies ){
-				lineChart_hands.addData( bodiesHandsToLineChart( allBodies ) );
-				lineChart_length.addData( bodiesHeightToLineChart( allBodies) );
-				donutChart_movement_not.addData( bodiesMotionToDonutChart( allBodies ) );
+				lineChart_hands.addData( bodiesHandsToLineChart( last1000Bodies ) );
+				lineChart_length.addData( bodiesHeightToLineChart( last1000Bodies ) );
+				donutChart_movement_not.addData( bodiesMotionToDonutChart( last1000Bodies ) );
 			}
-			
+
 			if( latest.hands ){
 				donutChart_hands_open_closed.addData( handsOpenToDonutChart( allHands ) );
 			}
