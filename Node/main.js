@@ -119,9 +119,9 @@ socket.of( '/save-charts' ).on( 'connection', function( socket ){
 			});
 		}
 
-		fs.writeFile( dataSavePath + name + "-" + chartSaveCounts[name] + ".json", JSON.stringify( data.data ), function( err ){
-			console.log( "SAVED CHART (DATA)." );
-		});
+		// fs.writeFile( dataSavePath + name + "-" + chartSaveCounts[name] + ".json", JSON.stringify( data.data ), function( err ){
+		// 	console.log( "SAVED CHART (DATA)." );
+		// });
 	});
 });
 
