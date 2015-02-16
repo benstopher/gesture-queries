@@ -155,7 +155,7 @@ var calculateLast1000Bodies = function( all ){
 	var last1000 = [];
 	var enough = false;
 
-	for( var i = 0; i < all.length; i++ ){
+	for( var i = all.length-1; i > 0; i-- ){
 		var thisOne = all[ i ];
 		if( thisOne.bodies ){
 			for( var j = 0; j < thisOne.bodies.data.length; j++ ){
@@ -171,7 +171,7 @@ var calculateLast1000Bodies = function( all ){
 			enough = true;
 			break;
 		}
-	}
+	}	
 	return last1000;
 }
 
