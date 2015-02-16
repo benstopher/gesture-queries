@@ -127,12 +127,15 @@
 		input.saver.onSaveData = function( latest, all ){
 			var allBodies = calculateAllBodies( all );
 			var allHands = calculateAllHands( all );
+			var last1000Bodies = calculateLast1000Bodies( all );
+			console.log( 'last 1000: ' + last1000Bodies.length );
 
 			if( latest.bodies ){
 				lineChart_hands.addData( bodiesHandsToLineChart( allBodies ) );
 				lineChart_length.addData( bodiesHeightToLineChart( allBodies) );
 				donutChart_movement_not.addData( bodiesMotionToDonutChart( allBodies ) );
 			}
+			
 			if( latest.hands ){
 				donutChart_hands_open_closed.addData( handsOpenToDonutChart( allHands ) );
 			}

@@ -151,6 +151,24 @@ var wordsToNodeChart = function( words ){
 
 }
 
+var calculateLast1000Bodies = function( all ){
+	var last1000 = [];
+	var count = 0;
+	for( var i = 0; i < all.length; i++ ){
+		var thisOne = all[ i ];
+		if( thisOne.bodies ){
+			for( var j = 0; j < thisOne.bodies.data.length; j++ ){
+				last1000.push( thisOne.bodies.data[ j ] );
+			}
+		}		
+		count++;
+		if( count >= 1000 ){
+			break;
+		}
+	}
+	return last1000;
+}
+
 var calculateAllBodies = function( all ){
 	var allBodies = [];
 	for( var i = 0; i < all.length; i++ ){
