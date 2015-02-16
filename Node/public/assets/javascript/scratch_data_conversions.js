@@ -153,21 +153,21 @@ var wordsToNodeChart = function( words ){
 
 var calculateLast1000Bodies = function( all ){
 	var last1000 = [];
-	var count = 0;
 	var enough = false;
+
 	for( var i = 0; i < all.length; i++ ){
 		var thisOne = all[ i ];
 		if( thisOne.bodies ){
 			for( var j = 0; j < thisOne.bodies.data.length; j++ ){
 				last1000.push( thisOne.bodies.data[ j ] );
-				count++;
-				if( count >= 1000 ){
+
+				if( last1000.length >= 1000 ){
 					enough = true;
 					break;
 				}
 			}
 		}
-		if( count >= 1000 || enough ){
+		if( last1000.length >= 1000 || enough ){
 			enough = true;
 			break;
 		}
