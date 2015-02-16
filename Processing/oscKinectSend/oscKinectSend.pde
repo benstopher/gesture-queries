@@ -16,12 +16,12 @@ color[]       userClr = new color[]{ color(255,0,0),
 PVector com = new PVector();                                   
 PVector com2d = new PVector();                                   
 
-boolean DRAW = true;
+boolean DRAW = false;
 
 void setup()
 {
   size(640, 480);
-  frameRate( 30 );
+  frameRate( 20 );
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5( this, 12000 );
   //broadcasting on 12001
