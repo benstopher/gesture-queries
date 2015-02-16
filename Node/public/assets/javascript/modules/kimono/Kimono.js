@@ -3,7 +3,7 @@ var Kimono = function( apiURL, apiKey, queryParam ){
 	this.apiURL = apiURL;
 	this.queryParam = queryParam;
 	this.apiKey = apiKey;
-	this.kimonoURL = "http://www.kimonolabs.com/api/"
+	this.kimonoURL = "https://www.kimonolabs.com/api/"
 	this.queryURL = this.constructURL();
 
 }
